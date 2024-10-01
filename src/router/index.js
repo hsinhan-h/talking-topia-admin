@@ -108,6 +108,46 @@ const router = createRouter({
                     path: '/documentation',
                     name: 'documentation',
                     component: () => import('@/views/pages/Documentation.vue')
+                },
+                {
+                    path: '/',
+                    name: 'dashboard',
+                    component: () => import('@/views/TalkingTopiaDashboard.vue')
+                },
+                {
+                    path: '/pages/crud',
+                    name: 'crud',
+                    component: () => import('@/views/pages/Crud.vue')
+                },
+                {
+                    path: '/pages/member-management',
+                    name: 'member-management',
+                    component: () => import('@/views/pages/MemberManagement.vue')
+                },
+                {
+                    path: '/pages/order-management',
+                    name: 'order-management',
+                    component: () => import('@/views/pages/OrderManagement.vue')
+                },
+                {
+                    path: '/pages/comment-management',
+                    name: 'comment-management',
+                    component: () => import('@/views/pages/CommentManagement.vue')
+                },
+                {
+                    path: '/pages/tutor-management',
+                    name: 'tutor-management',
+                    component: () => import('@/views/pages/TutorManagement.vue')
+                },
+                {
+                    path: '/pages/course-review',
+                    name: 'course-review',
+                    component: () => import('@/views/pages/CourseReview.vue')
+                },
+                {
+                    path: '/pages/tutor-review',
+                    name: 'tutor-review',
+                    component: () => import('@/views/pages/TutorReview.vue')
                 }
             ]
         },
