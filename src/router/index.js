@@ -153,21 +153,6 @@ const router = createRouter({
                     path: '/pages/comment-management',
                     name: 'comment-management',
                     component: () => import('@/views/pages/CommentManagement.vue')
-                },
-                {
-                    path: '/pages/tutor-management',
-                    name: 'tutor-management',
-                    component: () => import('@/views/pages/TutorManagement.vue')
-                },
-                {
-                    path: '/pages/course-review',
-                    name: 'course-review',
-                    component: () => import('@/views/pages/CourseReview.vue')
-                },
-                {
-                    path: '/pages/tutor-review',
-                    name: 'tutor-review',
-                    component: () => import('@/views/pages/TutorReview.vue')
                 }
             ]
         },
