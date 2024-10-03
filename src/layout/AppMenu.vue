@@ -20,7 +20,7 @@ const model = ref([
             {
                 label: '教師申請審核',
                 icon: 'pi pi-fw pi-eye',
-                to: '/pages/tutor-application-management'
+                to: '/pages/tutor-approval'
             }
         ]
     },
@@ -37,7 +37,7 @@ const model = ref([
             {
                 label: '課程上架審核',
                 icon: 'pi pi-fw pi-eye',
-                to: '/pages/tutor-review'
+                to: '/pages/course-approval'
             }
         ]
     },
@@ -49,12 +49,12 @@ const model = ref([
             {
                 label: '訂單管理',
                 icon: 'pi pi-fw pi-receipt',
-                to: '/pages/course-management'
+                to: '/pages/order-management'
             },
             {
                 label: '預約管理',
                 icon: 'pi pi-fw pi-calendar-plus',
-                to: '/pages/tutor-review'
+                to: '/pages/booking-management'
             }
         ]
     },
