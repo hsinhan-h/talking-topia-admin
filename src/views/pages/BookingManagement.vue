@@ -81,7 +81,7 @@ function deleteShipper() {
     <div style="margin: 50px"></div>
 
     <div className="card">
-        <DataTable :value="shippers" tableStyle="min-width: 50rem">
+        <DataTable :value="shippers" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
             <Column field="tutorID" header="編號" sortable=""></Column>
             <Column field="category" header="國籍"></Column>
             <Column field="fullName" header="姓名"></Column>
