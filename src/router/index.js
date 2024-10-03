@@ -125,6 +125,16 @@ const router = createRouter({
                     component: () => import('@/views/pages/MemberManagement.vue')
                 },
                 {
+                    path: '/pages/tutor-application-management',
+                    name: 'tutor-application-management',
+                    component: () => import('@/views/pages/TutorApplicationManagement.vue')
+                },
+                {
+                    path: '/pages/course-management',
+                    name: 'course-management',
+                    component: () => import('@/views/pages/CourseManagement.vue')
+                },
+                {
                     path: '/pages/order-management',
                     name: 'order-management',
                     component: () => import('@/views/pages/OrderManagement.vue')

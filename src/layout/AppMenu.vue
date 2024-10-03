@@ -5,74 +5,61 @@ import AppMenuItem from './AppMenuItem.vue';
 
 const model = ref([
     {
-        label: '首頁',
-        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-home', to: '/' }]
+        items: [{ label: 'Dashboard', icon: 'pi pi-fw pi-compass', to: '/' }]
     },
     {
         label: '會員系統',
-        icon: 'pi pi-fw pi-briefcase',
+        icon: 'pi pi-fw pi-cog',
         to: '/pages',
         items: [
             {
-                label: '會員管理',
-                icon: 'pi pi-fw pi-calendar-plus',
+                label: '會員資訊管理',
+                icon: 'pi pi-fw pi-user-edit',
                 to: '/pages/member-management'
             },
             {
-                label: '訂單管理',
-                icon: 'pi pi-fw pi-calendar-plus',
-                to: '/pages/order-management'
-            },
-            {
-                label: '評論管理',
-                icon: 'pi pi-fw pi-calendar-plus',
-                to: '/pages/comment-management'
+                label: '教師申請審核',
+                icon: 'pi pi-fw pi-eye',
+                to: '/pages/tutor-application-management'
             }
         ]
     },
     {
-        label: '教師系統',
+        label: '課程系統',
         icon: 'pi pi-fw pi-briefcase',
         to: '/pages',
         items: [
             {
-                label: '教師管理',
-                icon: 'pi pi-fw pi-calendar-plus',
-                to: '/pages/tutor-management'
+                label: '課程資訊管理',
+                icon: 'pi pi-fw pi-file-edit',
+                to: '/pages/course-management'
             },
             {
-                label: '教師審核',
-                icon: 'pi pi-fw pi-calendar-plus',
+                label: '課程上架審核',
+                icon: 'pi pi-fw pi-eye',
                 to: '/pages/tutor-review'
-            },
-            {
-                label: '課程審核',
-                icon: 'pi pi-fw pi-calendar-plus',
-                to: '/pages/course-review'
             }
         ]
     },
-
     {
-        label: 'Get Started',
+        label: '訂單及預約系統',
+        icon: 'pi pi-fw pi-briefcase',
+        to: '/pages',
         items: [
             {
-                label: 'Crud',
-                icon: 'pi pi-fw pi-pencil',
-                to: '/pages/crud'
+                label: '訂單管理',
+                icon: 'pi pi-fw pi-receipt',
+                to: '/pages/course-management'
             },
             {
-                label: 'Documentation',
-                icon: 'pi pi-fw pi-book',
-                to: '/documentation'
-            },
-            {
-                label: 'View Source',
-                icon: 'pi pi-fw pi-github',
-                url: 'https://github.com/primefaces/sakai-vue',
-                target: '_blank'
+                label: '預約管理',
+                icon: 'pi pi-fw pi-calendar-plus',
+                to: '/pages/tutor-review'
             }
         ]
+    },
+    {
+        items: [{ label: '評論管理', icon: 'pi pi-fw pi-pen-to-square', to: '/pages/comment-management' }]
     }
 ]);
 </script>
