@@ -81,7 +81,7 @@ function deleteShipper() {
     <div style="margin: 50px"></div>
 
     <div className="card">
-        <DataTable :value="shippers" tableStyle="min-width: 50rem">
+        <DataTable :value="shippers" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
             <Column field="courseID" header="編號" sortable=""></Column>
             <Column field="applicant" header="申請人"></Column>
             <Column field="category" header="分類"></Column>
@@ -115,4 +115,5 @@ function deleteShipper() {
             </template>
         </Dialog>
     </div>
+    <!-- <Paginator :rows="6" :totalRecords="120" :rowsPerPageOptions="[6, 12, 18]"></Paginator> -->
 </template>
