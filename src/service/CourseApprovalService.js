@@ -12,5 +12,14 @@ export const CourseApprovalService = {
             .catch((error) => {
                 console.error('Error fetching course approval list: ', error);
             });
+    },
+
+    approveCourse(courseId, courseApprove) {
+        return axios
+            .put(`${apiHost}/api/CourseManagementApi/UpdateCoursesStatus`, { courseId, courseApprove })
+            .then((response) => response.data)
+            .catch((error) => {
+                console.error('Error approving course: ', error);
+            });
     }
 };
