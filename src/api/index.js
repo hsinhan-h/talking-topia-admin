@@ -24,10 +24,11 @@ export function getAllOrders() {
     return ApiRequest.httpGet(api.getAllOrders);
 }
 
-export function updateOrder(orderId, OrderStatusId) {
+export function updateOrderItem(orderId, OrderStatusId) {
+    console.log(`ID是${orderId},狀態是${OrderStatusId} `);
     const request = {
-        orderId: orderId,
-        OrderStatusId: OrderStatusId
+        orderId,
+        OrderStatusId
     };
     return ApiRequest.httpPut(api.updateOrder, request);
 }

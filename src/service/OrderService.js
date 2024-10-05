@@ -1,4 +1,4 @@
-import { getAllOrders, updateOrder } from '@/api/index';
+import { getAllOrders, updateOrderItem } from '@/api/index';
 
 export const OrderService = {
     getOrders() {
@@ -13,9 +13,9 @@ export const OrderService = {
                 });
         });
     },
-    updateOrder() {
+    updateOrder(orderID, orderStatusId) {
         return new Promise((resolve, reject) => {
-            updateOrder()
+            updateOrderItem(orderID, orderStatusId)
                 .then((data) => {
                     console.log(data);
                     resolve(data.body);
