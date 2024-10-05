@@ -94,7 +94,7 @@ function showCourseImages(images) {
     <div style="margin: 50px"></div>
 
     <div className="card">
-        <DataTable :value="courseApprovalList" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
+        <DataTable :value="courseApprovalList" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem" class="course-approval-table">
             <Column field="tutorName" header="教師姓名"></Column>
             <Column field="applyDate" header="申請時間">
                 <template #body="slotProps">
@@ -126,8 +126,8 @@ function showCourseImages(images) {
             </Column>
             <Column :exportable="false" style="min-width: 12rem" header="課程審核">
                 <template #body="slotProps">
-                    <Button icon="pi pi-check-circle" label="通過" severity="help" class="mr-2" @click="editShipper(slotProps.data)" />
-                    <Button icon="pi pi-times-circle" label="駁回" severity="danger" @click="confirmDeleteShipper(slotProps.data)" />
+                    <Button icon="pi pi-check-circle" label="通過" class="mr-2" @click="editShipper(slotProps.data)" />
+                    <Button icon="pi pi-times-circle" label="駁回" severity="secondary" @click="confirmDeleteShipper(slotProps.data)" class="custom-secondary-button" />
                 </template>
             </Column>
         </DataTable>
@@ -159,5 +159,16 @@ function showCourseImages(images) {
     flex-wrap: wrap;
     max-height: 600px;
     gap: 20px;
+}
+
+.custom-secondary-button {
+    background-color: #02cab9;
+    border-color: #02cab9;
+    color: #fff;
+}
+
+.custom-secondary-button:hover {
+    background-color: #02ebd6;
+    border-color: #02ebd6;
 }
 </style>
