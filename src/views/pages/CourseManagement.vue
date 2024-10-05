@@ -13,6 +13,10 @@ onMounted(() => {
     ShipperService.getShippers().then((data) => (shippers.value = data));
 });
 
+function viewCourseInfo(course) {
+    console.log('查看課程資訊:', course);
+}
+
 function hideDialog() {
     shipperDialog.value = false;
     submitted.value = false;
@@ -82,23 +86,18 @@ function deleteShipper() {
 
     <div className="card">
         <DataTable :value="shippers" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
-            <Column field="courseID" header="編號" sortable=""></Column>
-            <Column field="applicant" header="申請人"></Column>
-            <Column field="category" header="分類"></Column>
-            <Column field="subject" header="科目"></Column>
+            <Column field="courseID" header="課程ID" sortable=""></Column>
             <Column field="courseTitle" header="課程標題"></Column>
-            <Column field="subtitle" header="副標題"></Column>
-            <Column field="description" header="課程介紹"></Column>
+            <Column field="courseTitle" header="課程圖片"></Column>
+            <Column field="tutorName" header="教師姓名"></Column>
+            <Column field="category" header="類別"></Column>
+            <Column field="subject" header="科目"></Column>
             <Column field="twentyFiveMinUnitPrice" header="25分鐘($)"></Column>
             <Column field="fiftyMinUnitPrice" header="50分鐘($)"></Column>
-            <Column field="thumbnailUrl" header="課程圖片"></Column>
-            <Column field="videoUrl" header="課程影片"></Column>
-            <Column :exportable="false" style="min-width: 12rem" header="通過/駁回">
-                <template #body="slotProps">
-                    <Button icon="pi-check-circle" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" />
-                    <Button icon="pi-times-circle" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)" />
-                </template>
-            </Column>
+            <Column field="videoUrl" header="上架狀態"></Column>
+            <Column field="publishDate" header="上架日期"></Column>
+            <Column field="videoUrl" header="審核狀態"></Column>
+            <Column field="courseInfo" header="課程資訊" :body="actionTemplate"></Column>
         </DataTable>
 
         <Dialog v-model:visible="deleteShipperDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
