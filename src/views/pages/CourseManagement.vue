@@ -13,6 +13,10 @@ onMounted(() => {
     ShipperService.getShippers().then((data) => (shippers.value = data));
 });
 
+function viewCourseInfo(course) {
+    console.log('查看課程資訊:', course);
+}
+
 function hideDialog() {
     shipperDialog.value = false;
     submitted.value = false;
@@ -65,7 +69,7 @@ function deleteShipper() {
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">當前老師數量</span>
+                        <span class="block text-muted-color font-medium mb-4">歷史上架數量</span>
                         <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">300</div>
                     </div>
                     <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
@@ -81,22 +85,19 @@ function deleteShipper() {
     <div style="margin: 50px"></div>
 
     <div className="card">
-        <DataTable :value="shippers" tableStyle="min-width: 50rem">
-            <Column field="tutorID" header="編號" sortable=""></Column>
-            <Column field="applicant" header="申請人"></Column>
-            <Column field="category" header="分類"></Column>
+        <DataTable :value="shippers" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
+            <Column field="courseID" header="課程ID" sortable=""></Column>
+            <Column field="courseTitle" header="課程標題"></Column>
+            <Column field="courseTitle" header="課程圖片"></Column>
+            <Column field="tutorName" header="教師姓名"></Column>
+            <Column field="category" header="類別"></Column>
             <Column field="subject" header="科目"></Column>
-            <Column field="schoolName" header="最高學歷"></Column>
-            <Column field="studyEndYear" header="畢業年份"></Column>
-            <Column field="professionalLicenseUrl" header="專業證照一覽"></Column>
-            <Column field="workExperience" header="工作經歷一覽"></Column>
-            <Column field="applyDateTime" header="申請時間"></Column>
-            <Column :exportable="false" style="min-width: 12rem" header="通過/駁回">
-                <template #body="slotProps">
-                    <Button icon="pi-check-circle" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" />
-                    <Button icon="pi-times-circle" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)" />
-                </template>
-            </Column>
+            <Column field="twentyFiveMinUnitPrice" header="25分鐘($)"></Column>
+            <Column field="fiftyMinUnitPrice" header="50分鐘($)"></Column>
+            <Column field="videoUrl" header="上架狀態"></Column>
+            <Column field="publishDate" header="上架日期"></Column>
+            <Column field="videoUrl" header="審核狀態"></Column>
+            <Column field="courseInfo" header="課程資訊" :body="actionTemplate"></Column>
         </DataTable>
 
         <Dialog v-model:visible="deleteShipperDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
@@ -113,4 +114,5 @@ function deleteShipper() {
             </template>
         </Dialog>
     </div>
+    <!-- <Paginator :rows="6" :totalRecords="120" :rowsPerPageOptions="[6, 12, 18]"></Paginator> -->
 </template>

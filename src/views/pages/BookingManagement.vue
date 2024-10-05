@@ -50,7 +50,7 @@ function deleteShipper() {
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">當前待審數量</span>
+                        <span class="block text-muted-color font-medium mb-4">今日評論數量</span>
                         <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">152</div>
                     </div>
                     <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
@@ -58,14 +58,14 @@ function deleteShipper() {
                     </div>
                 </div>
                 <span class="text-primary font-medium">24 new </span>
-                <span class="text-muted-color">since last visit</span>
+                <span class="text-muted-color">自 2024/09/30 00:00 以來</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-6">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">歷史上架數量</span>
+                        <span class="block text-muted-color font-medium mb-4">本週評論數量</span>
                         <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">300</div>
                     </div>
                     <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
@@ -73,7 +73,7 @@ function deleteShipper() {
                     </div>
                 </div>
                 <span class="text-primary font-medium">52 new </span>
-                <span class="text-muted-color">從平台開放以來</span>
+                <span class="text-muted-color">自 2024/09/29 以來</span>
             </div>
         </div>
     </div>
@@ -81,19 +81,17 @@ function deleteShipper() {
     <div style="margin: 50px"></div>
 
     <div className="card">
-        <DataTable :value="shippers" tableStyle="min-width: 50rem">
-            <Column field="courseID" header="編號" sortable=""></Column>
-            <Column field="applicant" header="申請人"></Column>
-            <Column field="category" header="分類"></Column>
-            <Column field="subject" header="科目"></Column>
-            <Column field="courseTitle" header="課程標題"></Column>
-            <Column field="subtitle" header="副標題"></Column>
-            <Column field="description" header="課程介紹"></Column>
-            <Column field="twentyFiveMinUnitPrice" header="25分鐘($)"></Column>
-            <Column field="fiftyMinUnitPrice" header="50分鐘($)"></Column>
-            <Column field="thumbnailUrl" header="課程圖片"></Column>
-            <Column field="videoUrl" header="課程影片"></Column>
-            <Column :exportable="false" style="min-width: 12rem" header="通過/駁回">
+        <DataTable :value="shippers" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
+            <Column field="tutorID" header="編號" sortable=""></Column>
+            <Column field="category" header="國籍"></Column>
+            <Column field="fullName" header="姓名"></Column>
+            <Column field="schoolName" header="暱稱"></Column>
+            <Column field="workExperience" header="性別"></Column>
+            <Column field="professionalLicenseUrl" header="生日"></Column>
+            <Column field="studyEndYear" header="電話"></Column>
+            <Column field="subject" header="信箱"></Column>
+            <Column field="applyDateTime" header="註冊時間"></Column>
+            <Column :exportable="false" style="min-width: 12rem" header="編輯/刪除">
                 <template #body="slotProps">
                     <Button icon="pi-check-circle" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" />
                     <Button icon="pi-times-circle" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)" />

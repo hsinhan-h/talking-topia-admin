@@ -125,29 +125,34 @@ const router = createRouter({
                     component: () => import('@/views/pages/MemberManagement.vue')
                 },
                 {
+                    path: '/pages/tutor-approval',
+                    name: 'tutor-approval',
+                    component: () => import('@/views/pages/TutorApproval.vue')
+                },
+                {
+                    path: '/pages/course-management',
+                    name: 'course-management',
+                    component: () => import('@/views/pages/CourseManagement.vue')
+                },
+                {
+                    path: '/pages/course-approval',
+                    name: 'course-approval',
+                    component: () => import('@/views/pages/CourseApproval.vue')
+                },
+                {
                     path: '/pages/order-management',
                     name: 'order-management',
                     component: () => import('@/views/pages/OrderManagement.vue')
                 },
                 {
+                    path: '/pages/booking-management',
+                    name: 'booking-management',
+                    component: () => import('@/views/pages/BookingManagement.vue')
+                },
+                {
                     path: '/pages/comment-management',
                     name: 'comment-management',
                     component: () => import('@/views/pages/CommentManagement.vue')
-                },
-                {
-                    path: '/pages/tutor-management',
-                    name: 'tutor-management',
-                    component: () => import('@/views/pages/TutorManagement.vue')
-                },
-                {
-                    path: '/pages/course-review',
-                    name: 'course-review',
-                    component: () => import('@/views/pages/CourseReview.vue')
-                },
-                {
-                    path: '/pages/tutor-review',
-                    name: 'tutor-review',
-                    component: () => import('@/views/pages/TutorReview.vue')
                 }
             ]
         },
