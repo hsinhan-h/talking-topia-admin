@@ -4,7 +4,10 @@ const api = {
     getAllShippers: '/api/Shipper/GetAllShippers',
     updateShipper: '/api/Shipper/UpdateShipper',
     getAllOrders: '/api/Order/GetAllOrders',
-    updateOrder: '/api/Order/UpdateOrder'
+    updateOrder: '/api/Order/UpdateOrder',
+    getAllBookings: '/api/Booking/GetAllBookings',
+    updateBooking: '/api/Booking/UpdateBooking',
+    deleteBooking: '/api/Booking/DeleteBooking'
 };
 
 export function getAllShippers() {
@@ -31,4 +34,24 @@ export function updateOrderItem(orderId, OrderStatusId) {
         OrderStatusId
     };
     return ApiRequest.httpPut(api.updateOrder, request);
+}
+
+export function getAllBookings() {
+    return ApiRequest.httpGet(api.getAllBookings);
+}
+
+export function updateBookingItem(bookingId, bookingDate, bookingTime) {
+    const request = {
+        bookingId,
+        bookingDate,
+        bookingTime
+    };
+    return ApiRequest.httpPut(api.updateBooking, request);
+}
+
+export function deleteBookingItem(bookingId) {
+    const request = {
+        bookingId
+    };
+    return ApiRequest.httpPut(api.deleteBooking, request);
 }
