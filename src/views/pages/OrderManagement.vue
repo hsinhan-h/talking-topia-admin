@@ -1,46 +1,47 @@
 <script setup>
-import { ShipperService } from '@/service/ShipperService';
+import { OrderService } from '@/service/OrderService';
 import { onMounted, ref } from 'vue';
 
-const shipperDialog = ref(false); // Dialog相當於Bootsrap的Modal!
+const orderDialog = ref(false);
 
-const shippers = ref(null);
-const shipper = ref({});
+const orders = ref(null);
+const order = ref({});
 const submitted = ref(false);
-const deleteShipperDialog = ref(false);
+const deleteOrderDialog = ref(false);
 
 onMounted(() => {
-    ShipperService.getShippers().then((data) => (shippers.value = data));
+    OrderService.getOrders().then((data) => (orders.value = data));
 });
 
+// Dialog的Cancel@click="hideDialog"
 function hideDialog() {
-    shipperDialog.value = false;
+    orderDialog.value = false;
     submitted.value = false;
 }
-
-function saveShipper() {
+// Dialog的Save@click="saveOrder"
+function saveOrder() {
     submitted.value = true;
-    console.log('準備要更新Shipper!!!!!!');
+    console.log('準備要更新order!!!!!!');
 
     // todo 串接API
 }
 
-function editShipper(data) {
-    shipper.value = { ...data };
-    shipperDialog.value = true;
+function editOrder(data) {
+    order.value = { ...data };
+    orderDialog.value = true;
 }
 
-function confirmDeleteShipper(data) {
-    deleteShipperDialog.value = true;
-    shipper.value = data;
+function confirmDeleteOrder(data) {
+    deleteOrderDialog.value = true;
+    order.value = data;
 }
 
-function deleteShipper() {
-    console.log('準備要刪除Shipper!!!!!!');
+function deleteOrder() {
+    console.log('準備要刪除order!!!!!!');
     // todo 串接API
-    console.log('刪除Shipper!!!!!!');
-    console.log(shipper.value);
-    deleteShipperDialog.value = false;
+    console.log('刪除order!!!!!!');
+    console.log(order.value);
+    deleteOrderDialog.value = false;
 }
 </script>
 
@@ -81,35 +82,68 @@ function deleteShipper() {
     <div style="margin: 50px"></div>
 
     <div className="card">
-        <DataTable :value="shippers" tableStyle="min-width: 50rem">
-            <Column field="tutorID" header="編號" sortable=""></Column>
-            <Column field="category" header="國籍"></Column>
-            <Column field="fullName" header="姓名"></Column>
-            <Column field="schoolName" header="暱稱"></Column>
-            <Column field="workExperience" header="性別"></Column>
-            <Column field="professionalLicenseUrl" header="生日"></Column>
-            <Column field="studyEndYear" header="電話"></Column>
-            <Column field="subject" header="信箱"></Column>
-            <Column field="applyDateTime" header="註冊時間"></Column>
-            <Column :exportable="false" style="min-width: 12rem" header="編輯/刪除">
+        <DataTable :value="orders" tableStyle="min-width: 50rem">
+            <Column field="transactionDate" header="訂單日期" sortable=""></Column>
+            <Column field="merchantTradeNo" header="訂單編號" sortable=""></Column>
+            <Column field="orderStatusId" header="訂單狀態" sortable=""></Column>
+            <Column field="subTotal" header="小計金額"></Column>
+            <Column field="totalPrice" header="訂單總額" sortable=""></Column>
+            <Column :exportable="false" style="min-width: 5rem" header="編輯/刪除">
                 <template #body="slotProps">
-                    <Button icon="pi-check-circle" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" />
-                    <Button icon="pi-times-circle" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)" />
+                    <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editOrder(slotProps.data)" />
+                    <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteOrder(slotProps.data)" />
                 </template>
             </Column>
         </DataTable>
 
-        <Dialog v-model:visible="deleteShipperDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <Dialog v-model:visible="orderDialog" :style="{ width: '450px' }" header="Order Details" :modal="true">
+            <div class="flex flex-col gap-6">
+                <div>
+                    <label for="fullName" class="block font-bold mb-3">會員姓名</label>
+                    <InputText id="fullName" v-model.trim="order.fullName" fluid disabled />
+                </div>
+                <div>
+                    <label for="email" class="block font-bold mb-3">電子信箱</label>
+                    <InputText id="email" v-model.trim="order.email" autofocus :invalid="submitted && !order.email" fluid disable />
+                </div>
+                <div>
+                    <label for="courseTitle" class="block font-bold mb-3">課程名稱</label>
+                    <InputText id="courseTitle" v-model.trim="order.courseTitle" :invalid="submitted && !order.courseTitle" fluid disabled />
+                </div>
+                <div>
+                    <label for="courseType" class="block font-bold mb-3">課程時長（單位：分鐘）</label>
+                    <InputText id="courseType" v-model.trim="order.courseType" :invalid="submitted && !order.courseType" fluid disabled />
+                </div>
+                <div>
+                    <label for="quantity" class="block font-bold mb-3">課程堂數</label>
+                    <InputText id="quantity" v-model.trim="order.quantity" :invalid="submitted && !order.quantity" fluid disabled />
+                </div>
+                <div>
+                    <label for="unitPrice" class="block font-bold mb-3">課程單價</label>
+                    <InputText id="unitPrice" v-model.trim="order.unitPrice" :invalid="submitted && !order.unitPrice" fluid disabled />
+                </div>
+                <div>
+                    <label for="orderStatusId" class="block font-bold mb-3">訂單狀態（待付款：0／已成功：1）</label>
+                    <InputText id="orderStatusId" v-model.trim="order.orderStatusId" required="true" :invalid="submitted && !order.orderStatusId" fluid />
+                </div>
+            </div>
+            <template #footer>
+                <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+                <Button label="Save" icon="pi pi-check" @click="saveOrder" />
+            </template>
+        </Dialog>
+
+        <Dialog v-model:visible="deleteOrderDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="shipper"
-                    >確定駁回 <b>{{ shipper.companyName }}</b
-                    >的申請嗎?</span
+                <span v-if="order"
+                    >確定刪除 <b>{{ order.fullName }}</b
+                    >的訂單嗎?</span
                 >
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteShipperDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteShipper" />
+                <Button label="No" icon="pi pi-times" text @click="deleteOrderDialog = false" />
+                <Button label="Yes" icon="pi pi-check" @click="deleteOrder" />
             </template>
         </Dialog>
     </div>
