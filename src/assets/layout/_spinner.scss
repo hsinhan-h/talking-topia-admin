@@ -1,0 +1,13 @@
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* 讓 spinner 垂直居中 */
+}
+
+.loading-text {
+    font-size: 1.8rem;
+    color: #02cab9;
+    margin-top: 1rem;
+}
