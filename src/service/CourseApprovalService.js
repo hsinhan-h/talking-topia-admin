@@ -3,7 +3,7 @@ import axios from 'axios';
 const apiHost = import.meta.env.VITE_API_HOST;
 
 export const CourseApprovalService = {
-    getCourseApprovalList() {
+    async getCourseApprovalList() {
         return axios
             .get(`${apiHost}/api/CourseManagementApi/GetCourseApprovalList`)
             .then((response) => {
@@ -14,7 +14,7 @@ export const CourseApprovalService = {
             });
     },
 
-    approveCourse(courseId, courseApprove) {
+    async approveCourse(courseId, courseApprove) {
         return axios
             .put(`${apiHost}/api/CourseManagementApi/UpdateCoursesStatus`, { courseId, courseApprove })
             .then((response) => response.data)
