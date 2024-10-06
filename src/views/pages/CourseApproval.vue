@@ -1,17 +1,14 @@
 <script setup>
 import { CourseApprovalService } from '@/service/CourseApprovalService';
-import { ShipperService } from '@/service/ShipperService';
 import { onMounted, ref } from 'vue';
 
-const shipperDialog = ref(false);
 const courseImagesDialog = ref(false);
 const courseVideoDialog = ref(false);
-
-const shippers = ref(null);
-const shipper = ref({});
-const submitted = ref(false);
+const approveApplicationDialog = ref(false);
 const rejectApplicationDialog = ref(false);
+
 const courseApprovalList = ref([]);
+const selectedCourse = ref({});
 const selectedCourseImages = ref([]);
 const selectedVideoUrl = ref(null);
 const selectedThumbnailUrl = ref(null);
@@ -20,9 +17,8 @@ const isLoading = ref(true);
 
 onMounted(async () => {
     try {
-        const [shipperData, courseApprovalData] = await Promise.all([ShipperService.getShippers(), CourseApprovalService.getCourseApprovalList()]);
+        const [courseApprovalData] = await Promise.all([CourseApprovalService.getCourseApprovalList()]);
 
-        shippers.value = shipperData;
         courseApprovalList.value = courseApprovalData;
         console.log('課程審核列表:', courseApprovalData);
     } catch (error) {
@@ -31,36 +27,6 @@ onMounted(async () => {
         isLoading.value = false;
     }
 });
-
-function hideDialog() {
-    shipperDialog.value = false;
-    submitted.value = false;
-}
-
-function saveShipper() {
-    submitted.value = true;
-    console.log('準備要更新Shipper!!!!!!');
-
-    // todo 串接API
-}
-
-function editShipper(data) {
-    shipper.value = { ...data };
-    shipperDialog.value = true;
-}
-
-function confirmDeleteShipper(data) {
-    rejectApplicationDialog.value = true;
-    shipper.value = data;
-}
-
-function deleteShipper() {
-    console.log('準備要刪除Shipper!!!!!!');
-    // todo 串接API
-    console.log('刪除Shipper!!!!!!');
-    console.log(shipper.value);
-    deleteShipperDialog.value = false;
-}
 
 function showCourseImages(images) {
     selectedCourseImages.value = images;
@@ -73,8 +39,23 @@ function showCourseVideo(videoUrl, thumbnailUrl) {
     courseVideoDialog.value = true;
 }
 
-function approveCoursePublishing(courseId, courseApprove) {
-    CourseApprovalService.approveCourse(courseId, courseApprove);
+function showapproveApplicationDialog(course) {
+    selectedCourse.value = course;
+    approveApplicationDialog.value = true;
+}
+
+function showRejectApplicationDialog(course) {
+    selectedCourse.value = course;
+    rejectApplicationDialog.value = true;
+}
+
+async function approveCoursePublishing(courseId, courseApprove) {
+    try {
+        await CourseApprovalService.approveCourse(courseId, courseApprove);
+        window.location.reload();
+    } catch (error) {
+        console.error('審核課程失敗', error);
+    }
 }
 </script>
 
@@ -120,7 +101,7 @@ function approveCoursePublishing(courseId, courseApprove) {
         <div style="margin: 50px"></div>
 
         <div className="card">
-            <DataTable :value="courseApprovalList" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem" class="course-approval-table">
+            <DataTable :value="courseApprovalList" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem" class="course-approval-table" emptyMessage="目前沒有待審核的課程">
                 <Column field="tutorName" header="教師姓名"></Column>
                 <Column field="applyDate" header="申請時間">
                     <template #body="slotProps">
@@ -152,10 +133,13 @@ function approveCoursePublishing(courseId, courseApprove) {
                 </Column>
                 <Column :exportable="false" style="min-width: 12rem" header="課程審核">
                     <template #body="slotProps">
-                        <Button icon="pi pi-check-circle" label="通過" class="mr-2" @click="approveCoursePublishing(slotProps.data.courseId, true)" />
-                        <Button icon="pi pi-times-circle" label="駁回" @click="rejectCoursePublishing(slotProps.data.courseId)" class="custom-secondary-button" />
+                        <Button icon="pi pi-check-circle" label="通過" class="mr-2" @click="showapproveApplicationDialog(slotProps.data)" />
+                        <Button icon="pi pi-times-circle" label="駁回" @click="showRejectApplicationDialog(slotProps.data)" class="custom-secondary-button" />
                     </template>
                 </Column>
+                <template #empty>
+                    <div class="w-100 text-center empty-approval-list-text">目前沒有待審核的課程</div>
+                </template>
             </DataTable>
         </div>
 
@@ -172,17 +156,28 @@ function approveCoursePublishing(courseId, courseApprove) {
                 <img :src="selectedThumbnailUrl" alt="自介影片封面" style="width: 80%; aspect-ratio: 16 / 9; object-fit: contain" />
             </div>
         </Dialog>
+        <Dialog v-model:visible="approveApplicationDialog" :style="{ width: '450px' }" header="通過申請" :modal="true">
+            <div class="flex items-center gap-4">
+                <i class="pi pi-exclamation-triangle !text-3xl" />
+                <span v-if="selectedCourse"
+                    >確定通過教師 <b>{{ selectedCourse.tutorName }} </b> 的課程申請嗎? <br />課程名稱: {{ selectedCourse.courseTitle }}</span
+                >
+            </div>
+            <template #footer>
+                <Button label="No" icon="pi pi-times" text @click="approveApplicationDialog = false" />
+                <Button label="Yes" icon="pi pi-check" @click="approveCoursePublishing(selectedCourse.courseId, true)" />
+            </template>
+        </Dialog>
         <Dialog v-model:visible="rejectApplicationDialog" :style="{ width: '450px' }" header="駁回申請" :modal="true">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="shipper"
-                    >確定駁回 <b>{{ shipper.companyName }}</b
-                    >的申請嗎?</span
+                <span v-if="selectedCourse"
+                    >確定駁回教師 <b>{{ selectedCourse.tutorName }} </b> 的課程申請嗎? <br />課程名稱: {{ selectedCourse.courseTitle }}</span
                 >
             </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="rejectApplicationDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteShipper" />
+                <Button label="Yes" icon="pi pi-check" @click="approveCoursePublishing(selectedCourse.courseId, false)" />
             </template>
         </Dialog>
     </div>
@@ -205,5 +200,12 @@ function approveCoursePublishing(courseId, courseApprove) {
 .custom-secondary-button:hover {
     background-color: #02ebd6;
     border-color: #02ebd6;
+}
+
+.empty-approval-list-text {
+    color: #02cab9;
+    font-size: 32px;
+    height: 40vh;
+    margin-top: 12px;
 }
 </style>

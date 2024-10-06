@@ -142,7 +142,8 @@ const router = createRouter({
                 {
                     path: '/pages/order-management',
                     name: 'order-management',
-                    component: () => import('@/views/pages/OrderManagement.vue')
+                    component: () => import('@/views/pages/OrderManagement.vue'),
+                    meta: { requiresAuth: true } // 需要登入驗證
                 },
                 {
                     path: '/pages/booking-management',
@@ -183,6 +184,18 @@ const router = createRouter({
             component: () => import('@/views/pages/auth/Error.vue')
         }
     ]
+});
+
+// 路由守衛，檢查是否有 JWT Token
+router.beforeEach((to, from, next) => {
+    const token = localStorage.getItem('token'); // 從 localStorage 中取得 token
+
+    if (to.meta.requiresAuth && !token) {
+        // 如果嘗試訪問受保護的頁面但沒有 token，重定向到登入頁
+        next({ name: 'login' });
+    } else {
+        next(); // 繼續導航
+    }
 });
 
 export default router;

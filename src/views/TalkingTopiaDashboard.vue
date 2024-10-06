@@ -2,119 +2,228 @@
 import { useLayout } from '@/layout/composables/layout';
 import { ProductService } from '@/service/ProductService'; //這個要修改
 import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router'; // 引入 Vue Router 來做跳轉
 
 const { getPrimary, getSurface, isDarkTheme } = useLayout();
 
 const products = ref(null); //這個要修改
-const chartData = ref(null);
-const chartOptions = ref(null);
-
-const items = ref([
-    { label: 'Add New', icon: 'pi pi-fw pi-plus' },
-    { label: 'Remove', icon: 'pi pi-fw pi-trash' }
-]);
+const barData = ref(null);
+const barOptions = ref(null);
+const lineData = ref(null);
+const lineOptions = ref(null);
+const pieData = ref(null);
+const pieOptions = ref(null);
+const pieCourseData = ref(null);
+const pieCourseOptions = ref(null);
+const router = useRouter(); // 使用 Vue Router
 
 onMounted(() => {
+    setColorOptions();
     ProductService.getProductsSmall().then((data) => (products.value = data));
-    chartData.value = setChartData();
-    chartOptions.value = setChartOptions();
 }); //這個要修改
 
-function setChartData() {
+// 登出方法
+const logout = () => {
+    localStorage.removeItem('token'); // 清除 token
+    router.push('/auth/login'); // 跳轉到登入頁面
+};
+
+function setColorOptions() {
     const documentStyle = getComputedStyle(document.documentElement);
-    //這個是Revenue Stream那張長條圖
-    return {
-        labels: ['Q1', 'Q2', 'Q3', 'Q4'],
+    const textColor = documentStyle.getPropertyValue('--text-color');
+    const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
+    const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
+
+    barData.value = {
+        labels: ['7月', '8月', '9月', '10月', '11月', '12月'],
         datasets: [
             {
-                type: 'bar',
-                label: 'Subscriptions',
-                backgroundColor: documentStyle.getPropertyValue('--p-primary-400'),
-                data: [4000, 10000, 15000, 4000],
-                barThickness: 32
+                label: '總銷售堂數(累計)',
+                backgroundColor: documentStyle.getPropertyValue('--p-primary-500'),
+                borderColor: documentStyle.getPropertyValue('--p-primary-500'),
+                data: [0, 10, 15, 20, 0, 0]
             },
             {
-                type: 'bar',
-                label: 'Advertising',
-                backgroundColor: documentStyle.getPropertyValue('--p-primary-300'),
-                data: [2100, 8400, 2400, 7500],
-                barThickness: 32
-            },
-            {
-                type: 'bar',
-                label: 'Affiliate',
+                label: '實際預約堂數(累計)',
                 backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
-                data: [4100, 5200, 3400, 7400],
-                borderRadius: {
-                    topLeft: 8,
-                    topRight: 8
-                },
-                borderSkipped: true,
-                barThickness: 32
+                borderColor: documentStyle.getPropertyValue('--p-primary-200'),
+                data: [0, 5, 5, 5, 4, 5]
             }
         ]
     };
-}
-
-function setChartOptions() {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const borderColor = documentStyle.getPropertyValue('--surface-border');
-    const textMutedColor = documentStyle.getPropertyValue('--text-color-secondary');
-
-    return {
-        maintainAspectRatio: false,
-        aspectRatio: 0.8,
+    barOptions.value = {
+        plugins: {
+            legend: {
+                labels: {
+                    fontColor: textColor
+                }
+            }
+        },
         scales: {
             x: {
-                stacked: true,
                 ticks: {
-                    color: textMutedColor
+                    color: textColorSecondary,
+                    font: {
+                        weight: 500
+                    }
                 },
                 grid: {
-                    color: 'transparent',
-                    borderColor: 'transparent'
+                    display: false,
+                    drawBorder: false
                 }
             },
             y: {
-                stacked: true,
                 ticks: {
-                    color: textMutedColor
+                    color: textColorSecondary
                 },
                 grid: {
-                    color: borderColor,
-                    borderColor: 'transparent',
-                    drawTicks: false
+                    color: surfaceBorder,
+                    drawBorder: false
+                }
+            }
+        }
+    };
+
+    lineData.value = {
+        labels: ['7月', '8月', '9月', '10月', '11月', '12月'],
+        datasets: [
+            {
+                label: '🌟 英語口說提升班：讓你自信流利講英語的最佳選擇',
+                data: [0, 10, 15, 20, 0, 0],
+                fill: false,
+                backgroundColor: documentStyle.getPropertyValue('--p-primary-500'),
+                borderColor: documentStyle.getPropertyValue('--p-primary-500'),
+                tension: 0.4
+            },
+            {
+                label: 'Akimoの日本語教室 🎌📚',
+                data: [0, 5, 5, 19, 0, 0],
+                fill: false,
+                backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
+                borderColor: documentStyle.getPropertyValue('--p-primary-200'),
+                tension: 0.4
+            }
+        ]
+    };
+    lineOptions.value = {
+        plugins: {
+            legend: {
+                labels: {
+                    fontColor: textColor
+                }
+            }
+        },
+        scales: {
+            x: {
+                ticks: {
+                    color: textColorSecondary
+                },
+                grid: {
+                    color: surfaceBorder,
+                    drawBorder: false
+                }
+            },
+            y: {
+                ticks: {
+                    color: textColorSecondary
+                },
+                grid: {
+                    color: surfaceBorder,
+                    drawBorder: false
+                }
+            }
+        }
+    };
+
+    pieData.value = {
+        labels: ['英文', '日文', '中文', '德文', '法文', '西班牙文', 'HTML/CSS', 'JavaScript', 'C#', 'SQL', 'Python', 'Java', '數學', '物理', '化學', '歷史', '地理', '生物'],
+        datasets: [
+            {
+                data: [30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0, 0, 0],
+                backgroundColor: [
+                    documentStyle.getPropertyValue('--p-red-50'),
+                    documentStyle.getPropertyValue('--p-red-100'),
+                    documentStyle.getPropertyValue('--p-red-200'),
+                    documentStyle.getPropertyValue('--p-red-300'),
+                    documentStyle.getPropertyValue('--p-red-400'),
+                    documentStyle.getPropertyValue('--p-red-500'),
+                    documentStyle.getPropertyValue('--p-red-600'),
+                    documentStyle.getPropertyValue('--p-red-700'),
+                    documentStyle.getPropertyValue('--p-red-800'),
+                    documentStyle.getPropertyValue('--p-red-900'),
+                    documentStyle.getPropertyValue('--p-yellow-100'),
+                    documentStyle.getPropertyValue('--p-yellow-50'),
+                    documentStyle.getPropertyValue('--p-pink-100'),
+                    documentStyle.getPropertyValue('--p-indigo-100'),
+                    documentStyle.getPropertyValue('--p-orange-100'),
+                    documentStyle.getPropertyValue('--p-pink-200'),
+                    documentStyle.getPropertyValue('--p-cyan-100'),
+                    documentStyle.getPropertyValue('--p-cyan-200')
+                ],
+                hoverBackgroundColor: [documentStyle.getPropertyValue('--p-indigo-400'), documentStyle.getPropertyValue('--p-purple-400'), documentStyle.getPropertyValue('--p-teal-400')]
+            }
+        ]
+    };
+
+    pieOptions.value = {
+        plugins: {
+            legend: {
+                labels: {
+                    usePointStyle: true,
+                    color: textColor
+                }
+            }
+        }
+    };
+
+    pieCourseData.value = {
+        labels: ['比爾叔的C#實戰班📣', '曹老師的SQL 超進階神級資料庫教學', '🐟金魚都能懂的HTML/CSS教學'],
+        datasets: [
+            {
+                data: [333, 222, 200],
+                backgroundColor: [documentStyle.getPropertyValue('--p-red-200'), documentStyle.getPropertyValue('--p-red-400'), documentStyle.getPropertyValue('--p-red-600')],
+                hoverBackgroundColor: [documentStyle.getPropertyValue('--p-indigo-400'), documentStyle.getPropertyValue('--p-purple-400'), documentStyle.getPropertyValue('--p-teal-400')]
+            }
+        ]
+    };
+
+    pieCourseOptions.value = {
+        plugins: {
+            legend: {
+                labels: {
+                    usePointStyle: true,
+                    color: textColor
                 }
             }
         }
     };
 }
 
-const formatCurrency = (value) => {
-    return value.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-};
-
-watch([getPrimary, getSurface, isDarkTheme], () => {
-    chartData.value = setChartData();
-    chartOptions.value = setChartOptions();
-});
+watch(
+    [getPrimary, getSurface, isDarkTheme],
+    () => {
+        setColorOptions();
+    },
+    { immediate: true }
+);
 </script>
 
 <template>
+    <!-- 四個概況小方塊 -->
     <div class="grid grid-cols-12 gap-8">
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">訂單數量</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">152</div>
+                        <span class="block text-muted-color font-medium mb-4">會員總數</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">277</div>
                     </div>
                     <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
+                        <i class="pi pi-users text-cyan-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">24 new </span>
-                <span class="text-muted-color">since last visit</span>
+                <span class="text-muted-color">今天新增</span>
+                <span class="text-primary font-medium"> 7 名</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
@@ -128,220 +237,67 @@ watch([getPrimary, getSurface, isDarkTheme], () => {
                         <i class="pi pi-dollar text-orange-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">%52+ </span>
-                <span class="text-muted-color">since last week</span>
+                <span class="text-muted-color">較昨日</span>
+                <span class="text-primary font-medium"> + 52% </span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">熱銷課程</span>
+                        <span class="block text-muted-color font-medium mb-4">本月熱銷</span>
                         <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">高級英語</div>
                     </div>
                     <div class="flex items-center justify-center bg-cyan-100 dark:bg-cyan-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-users text-cyan-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">520 </span>
-                <span class="text-muted-color">since last visit</span>
+                <span class="text-muted-color">今天又新增</span>
+                <span class="text-primary font-medium"> 520 筆訂單</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">優質課程</span>
+                        <span class="block text-muted-color font-medium mb-4">本月優質</span>
                         <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">Vue.js套件高級應用</div>
                     </div>
                     <div class="flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-comment text-purple-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">85 </span>
-                <span class="text-muted-color">since last visit</span>
-            </div>
-        </div>
-        <!-- 上方是四個概況小方塊 -->
-
-        <!-- 下方是四個chart圖表及穿插圖表 -->
-        <div class="col-span-12 xl:col-span-6">
-            <div class="card">
-                <div class="font-semibold text-xl mb-4">最新上架課程</div>
-                <DataTable :value="products" :rows="5" :paginator="true" responsiveLayout="scroll">
-                    <Column style="width: 15%" header="Image">
-                        <template #body="slotProps">
-                            <img :src="`https://primefaces.org/cdn/primevue/images/product/${slotProps.data.image}`" :alt="slotProps.data.image" width="50" class="shadow" />
-                        </template>
-                    </Column>
-                    <Column field="name" header="Name" :sortable="true" style="width: 35%"></Column>
-                    <Column field="price" header="Price" :sortable="true" style="width: 35%">
-                        <template #body="slotProps">
-                            {{ formatCurrency(slotProps.data.price) }}
-                        </template>
-                    </Column>
-                    <Column style="width: 15%" header="View">
-                        <template #body>
-                            <Button icon="pi pi-search" type="button" class="p-button-text"></Button>
-                        </template>
-                    </Column>
-                </DataTable>
-            </div>
-
-            <div class="card">
-                <div class="flex justify-between items-center mb-6">
-                    <div class="font-semibold text-xl">熱銷課程</div>
-                    <div>
-                        <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded" @click="$refs.menu2.toggle($event)"></Button>
-                        <Menu ref="menu2" :popup="true" :model="items" class="!min-w-40"></Menu>
-                    </div>
-                </div>
-                <ul class="list-none p-0 m-0">
-                    <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                        <div>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Space T-Shirt</span>
-                            <div class="mt-1 text-muted-color">Clothing</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 flex items-center">
-                            <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                                <div class="bg-orange-500 h-full" style="width: 50%"></div>
-                            </div>
-                            <span class="text-orange-500 ml-4 font-medium">%50</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                        <div>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Portal Sticker</span>
-                            <div class="mt-1 text-muted-color">Accessories</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-20 flex items-center">
-                            <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                                <div class="bg-cyan-500 h-full" style="width: 16%"></div>
-                            </div>
-                            <span class="text-cyan-500 ml-4 font-medium">%16</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                        <div>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Supernova Sticker</span>
-                            <div class="mt-1 text-muted-color">Accessories</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-20 flex items-center">
-                            <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                                <div class="bg-pink-500 h-full" style="width: 67%"></div>
-                            </div>
-                            <span class="text-pink-500 ml-4 font-medium">%67</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                        <div>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Wonders Notebook</span>
-                            <div class="mt-1 text-muted-color">Office</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-20 flex items-center">
-                            <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                                <div class="bg-green-500 h-full" style="width: 35%"></div>
-                            </div>
-                            <span class="text-primary ml-4 font-medium">%35</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                        <div>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Mat Black Case</span>
-                            <div class="mt-1 text-muted-color">Accessories</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-20 flex items-center">
-                            <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                                <div class="bg-purple-500 h-full" style="width: 75%"></div>
-                            </div>
-                            <span class="text-purple-500 ml-4 font-medium">%75</span>
-                        </div>
-                    </li>
-                    <li class="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
-                        <div>
-                            <span class="text-surface-900 dark:text-surface-0 font-medium mr-2 mb-1 md:mb-0">Robots T-Shirt</span>
-                            <div class="mt-1 text-muted-color">Clothing</div>
-                        </div>
-                        <div class="mt-2 md:mt-0 ml-0 md:ml-20 flex items-center">
-                            <div class="bg-surface-300 dark:bg-surface-500 rounded-border overflow-hidden w-40 lg:w-24" style="height: 8px">
-                                <div class="bg-teal-500 h-full" style="width: 40%"></div>
-                            </div>
-                            <span class="text-teal-500 ml-4 font-medium">%40</span>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-span-12 xl:col-span-6">
-            <div class="card">
-                <div class="font-semibold text-xl mb-4">業績概況</div>
-                <Chart type="bar" :data="chartData" :options="chartOptions" class="h-80" />
-            </div>
-            <div class="card">
-                <div class="flex items-center justify-between mb-6">
-                    <div class="font-semibold text-xl">最新通知</div>
-                    <div>
-                        <Button icon="pi pi-ellipsis-v" class="p-button-text p-button-plain p-button-rounded" @click="$refs.menu1.toggle($event)"></Button>
-                        <Menu ref="menu1" :popup="true" :model="items" class="!min-w-40"></Menu>
-                    </div>
-                </div>
-
-                <span class="block text-muted-color font-medium mb-4">TODAY</span>
-                <ul class="p-0 mx-0 mt-0 mb-6 list-none">
-                    <li class="flex items-center py-2 border-b border-surface">
-                        <div class="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-full mr-4 shrink-0">
-                            <i class="pi pi-dollar !text-xl text-blue-500"></i>
-                        </div>
-                        <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                            >Richard Jones
-                            <span class="text-surface-700 dark:text-surface-100">has purchased a blue t-shirt for <span class="text-primary font-bold">$79.00</span></span>
-                        </span>
-                    </li>
-                    <li class="flex items-center py-2">
-                        <div class="w-12 h-12 flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-full mr-4 shrink-0">
-                            <i class="pi pi-download !text-xl text-orange-500"></i>
-                        </div>
-                        <span class="text-surface-700 dark:text-surface-100 leading-normal">Your request for withdrawal of <span class="text-primary font-bold">$2500.00</span> has been initiated.</span>
-                    </li>
-                </ul>
-
-                <span class="block text-muted-color font-medium mb-4">YESTERDAY</span>
-                <ul class="p-0 m-0 list-none mb-6">
-                    <li class="flex items-center py-2 border-b border-surface">
-                        <div class="w-12 h-12 flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-full mr-4 shrink-0">
-                            <i class="pi pi-dollar !text-xl text-blue-500"></i>
-                        </div>
-                        <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                            >Keyser Wick
-                            <span class="text-surface-700 dark:text-surface-100">has purchased a black jacket for <span class="text-primary font-bold">$59.00</span></span>
-                        </span>
-                    </li>
-                    <li class="flex items-center py-2 border-b border-surface">
-                        <div class="w-12 h-12 flex items-center justify-center bg-pink-100 dark:bg-pink-400/10 rounded-full mr-4 shrink-0">
-                            <i class="pi pi-question !text-xl text-pink-500"></i>
-                        </div>
-                        <span class="text-surface-900 dark:text-surface-0 leading-normal"
-                            >Jane Davis
-                            <span class="text-surface-700 dark:text-surface-100">has posted a new questions about your product.</span>
-                        </span>
-                    </li>
-                </ul>
-                <span class="block text-muted-color font-medium mb-4">LAST WEEK</span>
-                <ul class="p-0 m-0 list-none">
-                    <li class="flex items-center py-2 border-b border-surface">
-                        <div class="w-12 h-12 flex items-center justify-center bg-green-100 dark:bg-green-400/10 rounded-full mr-4 shrink-0">
-                            <i class="pi pi-arrow-up !text-xl text-green-500"></i>
-                        </div>
-                        <span class="text-surface-900 dark:text-surface-0 leading-normal">Your revenue has increased by <span class="text-primary font-bold">%25</span>.</span>
-                    </li>
-                    <li class="flex items-center py-2 border-b border-surface">
-                        <div class="w-12 h-12 flex items-center justify-center bg-purple-100 dark:bg-purple-400/10 rounded-full mr-4 shrink-0">
-                            <i class="pi pi-heart !text-xl text-purple-500"></i>
-                        </div>
-                        <span class="text-surface-900 dark:text-surface-0 leading-normal"><span class="text-primary font-bold">12</span> users have added your products to their wishlist.</span>
-                    </li>
-                </ul>
+                <span class="text-muted-color">今天又獲得</span>
+                <span class="text-primary font-medium"> 85 則5星好評</span>
             </div>
         </div>
     </div>
+    <div style="margin: 50px 0px"></div>
+    <!-- 下方是四個chart圖表及穿插圖表 -->
+    <Fluid class="grid grid-cols-12 gap-8">
+        <div class="col-span-12 xl:col-span-6">
+            <div class="card">
+                <div class="font-semibold text-xl mb-4">熱門科目業績差異曲線</div>
+                <Chart type="line" :data="lineData" :options="lineOptions"></Chart>
+            </div>
+        </div>
+        <div class="col-span-12 xl:col-span-6">
+            <div class="card">
+                <div class="font-semibold text-xl mb-4">銷售數量及實際預約對照表</div>
+                <Chart type="bar" :data="barData" :options="barOptions"></Chart>
+            </div>
+        </div>
+        <div class="col-span-12 xl:col-span-6">
+            <div class="card flex flex-col items-center">
+                <div class="font-semibold text-xl mb-4">熱門科目占比</div>
+                <Chart type="doughnut" :data="pieData" :options="pieOptions"></Chart>
+            </div>
+        </div>
+        <div class="col-span-12 xl:col-span-6">
+            <div class="card flex flex-col items-center">
+                <div class="font-semibold text-xl mb-4">熱門課程佔比</div>
+                <Chart type="doughnut" :data="pieCourseData" :options="pieCourseOptions"></Chart>
+            </div>
+        </div>
+    </Fluid>
 </template>
