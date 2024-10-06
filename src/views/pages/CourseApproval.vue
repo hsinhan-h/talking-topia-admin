@@ -72,6 +72,10 @@ function showCourseVideo(videoUrl, thumbnailUrl) {
     selectedThumbnailUrl.value = thumbnailUrl;
     courseVideoDialog.value = true;
 }
+
+function approveCoursePublishing(courseId, courseApprove) {
+    CourseApprovalService.approveCourse(courseId, courseApprove);
+}
 </script>
 
 <template>
@@ -148,24 +152,24 @@ function showCourseVideo(videoUrl, thumbnailUrl) {
                 </Column>
                 <Column :exportable="false" style="min-width: 12rem" header="課程審核">
                     <template #body="slotProps">
-                        <Button icon="pi pi-check-circle" label="通過" class="mr-2" @click="editShipper(slotProps.data)" />
-                        <Button icon="pi pi-times-circle" label="駁回" @click="confirmDeleteShipper(slotProps.data)" class="custom-secondary-button" />
+                        <Button icon="pi pi-check-circle" label="通過" class="mr-2" @click="approveCoursePublishing(slotProps.data.courseId, true)" />
+                        <Button icon="pi pi-times-circle" label="駁回" @click="rejectCoursePublishing(slotProps.data.courseId)" class="custom-secondary-button" />
                     </template>
                 </Column>
             </DataTable>
         </div>
 
-        <Dialog v-model:visible="courseImagesDialog" header="課程圖片" :style="{ width: '700px' }" :modal="true">
+        <Dialog v-model:visible="courseImagesDialog" header="課程圖片" :style="{ width: '680px' }" :modal="true">
             <div class="course-images-dialog">
                 <img v-for="(image, index) in selectedCourseImages" :key="index" :src="image" alt="課程圖片" style="width: 300px; height: 200px; object-fit: contain" />
             </div>
         </Dialog>
-        <Dialog v-model:visible="courseVideoDialog" header="教師自介影片" :style="{ width: '700px' }" :modal="true">
+        <Dialog v-model:visible="courseVideoDialog" header="教師自介影片" :style="{ width: '680px' }" :modal="true">
             <div class="course-video-dialog">
                 <div>影片連結:</div>
-                <a :href="selectedVideoUrl" target="_blank" :style="{ display: 'block', marginBottom: '.8em' }">{{ selectedVideoUrl }}</a>
+                <a :href="selectedVideoUrl" target="_blank" style="display: block; margin-bottom: 0.8em; width: fit-content">{{ selectedVideoUrl }}</a>
                 <div>影片封面:</div>
-                <img :src="selectedThumbnailUrl" alt="自介影片封面" />
+                <img :src="selectedThumbnailUrl" alt="自介影片封面" style="width: 80%; aspect-ratio: 16 / 9; object-fit: contain" />
             </div>
         </Dialog>
         <Dialog v-model:visible="rejectApplicationDialog" :style="{ width: '450px' }" header="駁回申請" :modal="true">
