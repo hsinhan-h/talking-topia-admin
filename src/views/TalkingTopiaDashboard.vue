@@ -105,7 +105,6 @@ function setColorOptions() {
             }
         ]
     };
-
     lineOptions.value = {
         plugins: {
             legend: {
