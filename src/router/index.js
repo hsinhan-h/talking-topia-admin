@@ -112,8 +112,7 @@ const router = createRouter({
                 {
                     path: '/',
                     name: 'dashboard',
-                    component: () => import('@/views/TalkingTopiaDashboard.vue'),
-                    meta: { requiresAuth: true } // 需要登入驗證
+                    component: () => import('@/views/TalkingTopiaDashboard.vue')
                 },
                 {
                     path: '/pages/crud',
@@ -143,7 +142,8 @@ const router = createRouter({
                 {
                     path: '/pages/order-management',
                     name: 'order-management',
-                    component: () => import('@/views/pages/OrderManagement.vue')
+                    component: () => import('@/views/pages/OrderManagement.vue'),
+                    meta: { requiresAuth: true } // 需要登入驗證
                 },
                 {
                     path: '/pages/booking-management',
