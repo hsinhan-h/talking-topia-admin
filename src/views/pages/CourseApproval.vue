@@ -10,8 +10,11 @@ const courseVideoDialog = ref(false);
 const shippers = ref(null);
 const shipper = ref({});
 const submitted = ref(false);
-const rejectApplicationDialog = ref(false);
+
 const courseApprovalList = ref([]);
+const selectedCourse = ref({});
+const approveApplicationDialog = ref(false);
+const rejectApplicationDialog = ref(false);
 const selectedCourseImages = ref([]);
 const selectedVideoUrl = ref(null);
 const selectedThumbnailUrl = ref(null);
@@ -73,8 +76,23 @@ function showCourseVideo(videoUrl, thumbnailUrl) {
     courseVideoDialog.value = true;
 }
 
-function approveCoursePublishing(courseId, courseApprove) {
-    CourseApprovalService.approveCourse(courseId, courseApprove);
+function showapproveApplicationDialog(course) {
+    selectedCourse.value = course;
+    approveApplicationDialog.value = true;
+}
+
+function showRejectApplicationDialog(course) {
+    selectedCourse.value = course;
+    rejectApplicationDialog.value = true;
+}
+
+async function approveCoursePublishing(courseId, courseApprove) {
+    try {
+        await CourseApprovalService.approveCourse(courseId, courseApprove);
+        window.location.reload();
+    } catch (error) {
+        console.error('審核課程失敗', error);
+    }
 }
 </script>
 
@@ -152,8 +170,8 @@ function approveCoursePublishing(courseId, courseApprove) {
                 </Column>
                 <Column :exportable="false" style="min-width: 12rem" header="課程審核">
                     <template #body="slotProps">
-                        <Button icon="pi pi-check-circle" label="通過" class="mr-2" @click="approveCoursePublishing(slotProps.data.courseId, true)" />
-                        <Button icon="pi pi-times-circle" label="駁回" @click="rejectCoursePublishing(slotProps.data.courseId)" class="custom-secondary-button" />
+                        <Button icon="pi pi-check-circle" label="通過" class="mr-2" @click="showapproveApplicationDialog(slotProps.data)" />
+                        <Button icon="pi pi-times-circle" label="駁回" @click="showRejectApplicationDialog(slotProps.data)" class="custom-secondary-button" />
                     </template>
                 </Column>
             </DataTable>
@@ -172,17 +190,28 @@ function approveCoursePublishing(courseId, courseApprove) {
                 <img :src="selectedThumbnailUrl" alt="自介影片封面" style="width: 80%; aspect-ratio: 16 / 9; object-fit: contain" />
             </div>
         </Dialog>
+        <Dialog v-model:visible="approveApplicationDialog" :style="{ width: '450px' }" header="通過申請" :modal="true">
+            <div class="flex items-center gap-4">
+                <i class="pi pi-exclamation-triangle !text-3xl" />
+                <span v-if="shipper"
+                    >確定通過教師 <b>{{ selectedCourse.tutorName }} </b> 的課程申請嗎? <br />課程名稱: {{ selectedCourse.courseTitle }}</span
+                >
+            </div>
+            <template #footer>
+                <Button label="No" icon="pi pi-times" text @click="approveApplicationDialog = false" />
+                <Button label="Yes" icon="pi pi-check" @click="approveCoursePublishing(selectedCourse.courseId, true)" />
+            </template>
+        </Dialog>
         <Dialog v-model:visible="rejectApplicationDialog" :style="{ width: '450px' }" header="駁回申請" :modal="true">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
                 <span v-if="shipper"
-                    >確定駁回 <b>{{ shipper.companyName }}</b
-                    >的申請嗎?</span
+                    >確定駁回教師 <b>{{ selectedCourse.tutorName }} </b> 的課程申請嗎? <br />課程名稱: {{ selectedCourse.courseTitle }}</span
                 >
             </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="rejectApplicationDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteShipper" />
+                <Button label="Yes" icon="pi pi-check" @click="approveCoursePublishing(selectedCourse.courseId, false)" />
             </template>
         </Dialog>
     </div>
