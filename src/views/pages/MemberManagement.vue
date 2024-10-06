@@ -1,6 +1,9 @@
 <script setup>
 import { ShipperService } from '@/service/ShipperService';
 import { onMounted, ref } from 'vue';
+import { MemberData } from '@/service/MemberManagementService';
+
+
 
 const shipperDialog = ref(false); // Dialog相當於Bootsrap的Modal!
 
@@ -8,9 +11,11 @@ const shippers = ref(null);
 const shipper = ref({});
 const submitted = ref(false);
 const deleteShipperDialog = ref(false);
+const allmemberdata = ref([]);
 
 onMounted(() => {
     ShipperService.getShippers().then((data) => (shippers.value = data));
+    MemberData.getAllMemberDataList().then((data) =>(allmemberdata.value = data))
 });
 
 function hideDialog() {
@@ -22,7 +27,6 @@ function saveShipper() {
     submitted.value = true;
     console.log('準備要更新Shipper!!!!!!');
 
-    // todo 串接API
 }
 
 function editShipper(data) {
@@ -81,16 +85,16 @@ function deleteShipper() {
     <div style="margin: 50px"></div>
 
     <div className="card">
-        <DataTable :value="shippers" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
-            <Column field="tutorID" header="編號" sortable=""></Column>
-            <Column field="category" header="國籍"></Column>
-            <Column field="fullName" header="姓名"></Column>
-            <Column field="schoolName" header="暱稱"></Column>
-            <Column field="workExperience" header="性別"></Column>
-            <Column field="professionalLicenseUrl" header="生日"></Column>
-            <Column field="studyEndYear" header="電話"></Column>
-            <Column field="subject" header="信箱"></Column>
-            <Column field="applyDateTime" header="註冊時間"></Column>
+        <DataTable :value="allmemberdata" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
+            <Column field="memberId" header="編號" sortable=""></Column>
+            <Column field="nationName" header="國籍"></Column>
+            <Column field="memeberName" header="姓名"></Column>
+            <Column field="nickName" header="暱稱"></Column>
+            <Column field="gender" header="性別"></Column>
+            <Column field="birthday" header="生日"></Column>
+            <Column field="phone" header="電話"></Column>
+            <Column field="email" header="信箱"></Column>
+            <Column field="cdate" header="註冊時間"></Column>
             <Column :exportable="false" style="min-width: 12rem" header="編輯/刪除">
                 <template #body="slotProps">
                     <Button icon="pi-check-circle" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" />
