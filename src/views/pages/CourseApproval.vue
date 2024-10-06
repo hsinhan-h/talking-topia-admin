@@ -1,20 +1,14 @@
 <script setup>
 import { CourseApprovalService } from '@/service/CourseApprovalService';
-import { ShipperService } from '@/service/ShipperService';
 import { onMounted, ref } from 'vue';
 
-const shipperDialog = ref(false);
 const courseImagesDialog = ref(false);
 const courseVideoDialog = ref(false);
-
-const shippers = ref(null);
-const shipper = ref({});
-const submitted = ref(false);
+const approveApplicationDialog = ref(false);
+const rejectApplicationDialog = ref(false);
 
 const courseApprovalList = ref([]);
 const selectedCourse = ref({});
-const approveApplicationDialog = ref(false);
-const rejectApplicationDialog = ref(false);
 const selectedCourseImages = ref([]);
 const selectedVideoUrl = ref(null);
 const selectedThumbnailUrl = ref(null);
@@ -23,9 +17,8 @@ const isLoading = ref(true);
 
 onMounted(async () => {
     try {
-        const [shipperData, courseApprovalData] = await Promise.all([ShipperService.getShippers(), CourseApprovalService.getCourseApprovalList()]);
+        const [courseApprovalData] = await Promise.all([CourseApprovalService.getCourseApprovalList()]);
 
-        shippers.value = shipperData;
         courseApprovalList.value = courseApprovalData;
         console.log('課程審核列表:', courseApprovalData);
     } catch (error) {
@@ -34,36 +27,6 @@ onMounted(async () => {
         isLoading.value = false;
     }
 });
-
-function hideDialog() {
-    shipperDialog.value = false;
-    submitted.value = false;
-}
-
-function saveShipper() {
-    submitted.value = true;
-    console.log('準備要更新Shipper!!!!!!');
-
-    // todo 串接API
-}
-
-function editShipper(data) {
-    shipper.value = { ...data };
-    shipperDialog.value = true;
-}
-
-function confirmDeleteShipper(data) {
-    rejectApplicationDialog.value = true;
-    shipper.value = data;
-}
-
-function deleteShipper() {
-    console.log('準備要刪除Shipper!!!!!!');
-    // todo 串接API
-    console.log('刪除Shipper!!!!!!');
-    console.log(shipper.value);
-    deleteShipperDialog.value = false;
-}
 
 function showCourseImages(images) {
     selectedCourseImages.value = images;
@@ -193,7 +156,7 @@ async function approveCoursePublishing(courseId, courseApprove) {
         <Dialog v-model:visible="approveApplicationDialog" :style="{ width: '450px' }" header="通過申請" :modal="true">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="shipper"
+                <span v-if="selectedCourse"
                     >確定通過教師 <b>{{ selectedCourse.tutorName }} </b> 的課程申請嗎? <br />課程名稱: {{ selectedCourse.courseTitle }}</span
                 >
             </div>
@@ -205,7 +168,7 @@ async function approveCoursePublishing(courseId, courseApprove) {
         <Dialog v-model:visible="rejectApplicationDialog" :style="{ width: '450px' }" header="駁回申請" :modal="true">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="shipper"
+                <span v-if="selectedCourse"
                     >確定駁回教師 <b>{{ selectedCourse.tutorName }} </b> 的課程申請嗎? <br />課程名稱: {{ selectedCourse.courseTitle }}</span
                 >
             </div>
