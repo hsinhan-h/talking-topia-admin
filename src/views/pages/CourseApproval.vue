@@ -101,7 +101,7 @@ async function approveCoursePublishing(courseId, courseApprove) {
         <div style="margin: 50px"></div>
 
         <div className="card">
-            <DataTable :value="courseApprovalList" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem" class="course-approval-table">
+            <DataTable :value="courseApprovalList" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem" class="course-approval-table" emptyMessage="目前沒有待審核的課程">
                 <Column field="tutorName" header="教師姓名"></Column>
                 <Column field="applyDate" header="申請時間">
                     <template #body="slotProps">
@@ -137,6 +137,9 @@ async function approveCoursePublishing(courseId, courseApprove) {
                         <Button icon="pi pi-times-circle" label="駁回" @click="showRejectApplicationDialog(slotProps.data)" class="custom-secondary-button" />
                     </template>
                 </Column>
+                <template #empty>
+                    <div class="w-100 text-center empty-approval-list-text">目前沒有待審核的課程</div>
+                </template>
             </DataTable>
         </div>
 
@@ -197,5 +200,12 @@ async function approveCoursePublishing(courseId, courseApprove) {
 .custom-secondary-button:hover {
     background-color: #02ebd6;
     border-color: #02ebd6;
+}
+
+.empty-approval-list-text {
+    color: #02cab9;
+    font-size: 32px;
+    height: 40vh;
+    margin-top: 12px;
 }
 </style>
