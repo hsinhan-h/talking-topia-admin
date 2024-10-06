@@ -12,6 +12,8 @@ const lineData = ref(null);
 const lineOptions = ref(null);
 const pieData = ref(null);
 const pieOptions = ref(null);
+const pieCourseData = ref(null);
+const pieCourseOptions = ref(null);
 
 onMounted(() => {
     setColorOptions();
@@ -25,19 +27,19 @@ function setColorOptions() {
     const surfaceBorder = documentStyle.getPropertyValue('--surface-border');
 
     barData.value = {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        labels: ['7月', '8月', '9月', '10月', '11月', '12月'],
         datasets: [
             {
-                label: 'My First dataset',
+                label: '總銷售堂數(累計)',
                 backgroundColor: documentStyle.getPropertyValue('--p-primary-500'),
                 borderColor: documentStyle.getPropertyValue('--p-primary-500'),
-                data: [65, 59, 80, 81, 56, 55, 40]
+                data: [0, 10, 15, 20, 0, 0]
             },
             {
-                label: 'My Second dataset',
+                label: '實際預約堂數(累計)',
                 backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
                 borderColor: documentStyle.getPropertyValue('--p-primary-200'),
-                data: [28, 48, 40, 19, 86, 27, 90]
+                data: [0, 5, 5, 5, 4, 5]
             }
         ]
     };
@@ -75,19 +77,19 @@ function setColorOptions() {
     };
 
     lineData.value = {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        labels: ['7月', '8月', '9月', '10月', '11月', '12月'],
         datasets: [
             {
-                label: 'First Dataset',
-                data: [65, 59, 80, 81, 56, 55, 40],
+                label: '🌟 英語口說提升班：讓你自信流利講英語的最佳選擇',
+                data: [0, 10, 15, 20, 0, 0],
                 fill: false,
                 backgroundColor: documentStyle.getPropertyValue('--p-primary-500'),
                 borderColor: documentStyle.getPropertyValue('--p-primary-500'),
                 tension: 0.4
             },
             {
-                label: 'Second Dataset',
-                data: [28, 48, 40, 19, 86, 27, 90],
+                label: 'Akimoの日本語教室 🎌📚',
+                data: [0, 5, 5, 19, 0, 0],
                 fill: false,
                 backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
                 borderColor: documentStyle.getPropertyValue('--p-primary-200'),
@@ -127,17 +129,58 @@ function setColorOptions() {
     };
 
     pieData.value = {
-        labels: ['A', 'B', 'C'],
+        labels: ['英文', '日文', '中文', '德文', '法文', '西班牙文', 'HTML/CSS', 'JavaScript', 'C#', 'SQL', 'Python', 'Java', '數學', '物理', '化學', '歷史', '地理', '生物'],
         datasets: [
             {
-                data: [540, 325, 702],
-                backgroundColor: [documentStyle.getPropertyValue('--p-indigo-500'), documentStyle.getPropertyValue('--p-purple-500'), documentStyle.getPropertyValue('--p-teal-500')],
+                data: [30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0, 0, 0],
+                backgroundColor: [
+                    documentStyle.getPropertyValue('--p-red-50'),
+                    documentStyle.getPropertyValue('--p-red-100'),
+                    documentStyle.getPropertyValue('--p-red-200'),
+                    documentStyle.getPropertyValue('--p-red-300'),
+                    documentStyle.getPropertyValue('--p-red-400'),
+                    documentStyle.getPropertyValue('--p-red-500'),
+                    documentStyle.getPropertyValue('--p-red-600'),
+                    documentStyle.getPropertyValue('--p-red-700'),
+                    documentStyle.getPropertyValue('--p-red-800'),
+                    documentStyle.getPropertyValue('--p-red-900'),
+                    documentStyle.getPropertyValue('--p-yellow-100'),
+                    documentStyle.getPropertyValue('--p-yellow-50'),
+                    documentStyle.getPropertyValue('--p-pink-100'),
+                    documentStyle.getPropertyValue('--p-indigo-100'),
+                    documentStyle.getPropertyValue('--p-orange-100'),
+                    documentStyle.getPropertyValue('--p-pink-200'),
+                    documentStyle.getPropertyValue('--p-cyan-100'),
+                    documentStyle.getPropertyValue('--p-cyan-200')
+                ],
                 hoverBackgroundColor: [documentStyle.getPropertyValue('--p-indigo-400'), documentStyle.getPropertyValue('--p-purple-400'), documentStyle.getPropertyValue('--p-teal-400')]
             }
         ]
     };
 
     pieOptions.value = {
+        plugins: {
+            legend: {
+                labels: {
+                    usePointStyle: true,
+                    color: textColor
+                }
+            }
+        }
+    };
+
+    pieCourseData.value = {
+        labels: ['比爾叔的C#實戰班📣', '曹老師的SQL 超進階神級資料庫教學', '🐟金魚都能懂的HTML/CSS教學'],
+        datasets: [
+            {
+                data: [333, 222, 200],
+                backgroundColor: [documentStyle.getPropertyValue('--p-red-200'), documentStyle.getPropertyValue('--p-red-400'), documentStyle.getPropertyValue('--p-red-600')],
+                hoverBackgroundColor: [documentStyle.getPropertyValue('--p-indigo-400'), documentStyle.getPropertyValue('--p-purple-400'), documentStyle.getPropertyValue('--p-teal-400')]
+            }
+        ]
+    };
+
+    pieCourseOptions.value = {
         plugins: {
             legend: {
                 labels: {
@@ -246,7 +289,7 @@ watch(
         <div class="col-span-12 xl:col-span-6">
             <div class="card flex flex-col items-center">
                 <div class="font-semibold text-xl mb-4">熱門課程佔比</div>
-                <Chart type="doughnut" :data="pieData" :options="pieOptions"></Chart>
+                <Chart type="doughnut" :data="pieCourseData" :options="pieCourseOptions"></Chart>
             </div>
         </div>
     </Fluid>
