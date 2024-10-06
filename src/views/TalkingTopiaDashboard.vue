@@ -2,6 +2,7 @@
 import { useLayout } from '@/layout/composables/layout';
 import { ProductService } from '@/service/ProductService'; //這個要修改
 import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router'; // 引入 Vue Router 來做跳轉
 
 const { getPrimary, getSurface, isDarkTheme } = useLayout();
 
@@ -14,11 +15,18 @@ const pieData = ref(null);
 const pieOptions = ref(null);
 const pieCourseData = ref(null);
 const pieCourseOptions = ref(null);
+const router = useRouter(); // 使用 Vue Router
 
 onMounted(() => {
     setColorOptions();
     ProductService.getProductsSmall().then((data) => (products.value = data));
 }); //這個要修改
+
+// 登出方法
+const logout = () => {
+    localStorage.removeItem('token'); // 清除 token
+    router.push('/auth/login'); // 跳轉到登入頁面
+};
 
 function setColorOptions() {
     const documentStyle = getComputedStyle(document.documentElement);
