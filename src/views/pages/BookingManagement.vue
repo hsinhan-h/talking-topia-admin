@@ -152,7 +152,7 @@ function deleteBooking() {
     <div style="margin: 50px"></div>
 
     <div className="card">
-        <DataTable :value="bookings" tableStyle="min-width: 50rem">
+        <DataTable :value="bookings" tableStyle="min-width: 50rem" paginator :rows="10" :rowsPerPageOptions="[10, 20, 30]">
             <Column field="bookingDate" header="預約日期" sortable=""></Column>
             <Column field="bookingTime" header="預約時間"></Column>
             <Column field="courseTitle" header="課程名稱"></Column>
