@@ -7,12 +7,74 @@ import { onMounted, ref } from 'vue';
 const showEditDialog = ref(false);
 const submitted = ref(false);
 const allTutorData = ref([]);
+const approveApplicationDialog = ref(false);
+const rejectApplicationDialog = ref(false);
+const selectedTutor = ref(null);
+const rejectReason = ref('');
+
+
 
 
 
 onMounted(() => {
     MemberData.getAllTutorDataList().then((data) =>(allTutorData.value = data));
 });
+
+function showapproveApplicationDialog(tutorData) {
+    selectedTutor.value = tutorData;
+    approveApplicationDialog.value = true;
+}
+
+function showRejectApplicationDialog(tutorData) {
+    selectedTutor.value = tutorData;
+    rejectApplicationDialog.value = true;
+}
+
+
+async function approveresumefuntion(memberId, ApplyStatus) {
+    try {
+        await MemberData.approveresume({
+            memberId,
+            ApplyStatus,
+            rejectReason: ApplyStatus ? '' : rejectReason.value,
+            isTutor: ApplyStatus ? true : false  
+        });
+
+        if (ApplyStatus === true) {
+            toast.add({
+                severity: 'success',
+                summary: '成功',
+                detail: '通過課程審核！',
+                life: 3000
+            });
+            approveApplicationDialog.value = false;
+        } else {
+            toast.add({
+                severity: 'info',
+                summary: '成功',
+                detail: '申請未通過！',
+                life: 3000
+            });
+            rejectApplicationDialog.value = false;
+        }
+
+        await updateTutorDataList();
+    } catch (error) {
+        console.error('教師審核失敗', error);
+    }
+}
+
+async function updateTutorDataList() {
+    try {
+        const updatedTutorApprovalData = await MemberData.getAllTutorDataList();
+        allTutorData.value = updatedTutorApprovalData;
+    } catch (error) {
+        console.error('更新教師審核失敗', error);
+        toast.add({ severity: 'error', summary: '錯誤', detail: '無法加載教師審核列表，請稍後再試。', life: 3000 });
+    }
+}
+
+
 
 </script>
 
@@ -61,26 +123,52 @@ onMounted(() => {
             <Column field="resumeStatus" header="履歷審核狀態"></Column>
             <Column field="istutor" header="教師審核狀態"></Column>
             <Column field="rejectReason" header="教師申請駁回原因"></Column>
-            <Column :exportable="false" style="min-width: 12rem" header="編輯/刪除">
-                <!-- <template #body="slotProps">
-                    <Button icon="pi-check-circle" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" />
-                    <Button icon="pi-times-circle" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)" />
-                </template> -->
+            <Column :exportable="false" style="min-width: 12rem" header="教師審核">
+                <template #body="slotProps">
+                <Button icon="pi pi-check-circle" label="通過" class="mr-2" @click="showapproveApplicationDialog(slotProps.data)" />
+                <Button icon="pi pi-times-circle" label="駁回" @click="showRejectApplicationDialog(slotProps.data)" class="custom-secondary-button" />
+                </template>
             </Column>
         </DataTable>
 
-        <!-- <Dialog v-model:visible="deleteShipperDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <Dialog v-model:visible="approveApplicationDialog" :style="{ width: '450px' }" header="通過申請" :modal="true">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="shipper"
-                    >確定駁回 <b>{{ shipper.companyName }}</b
-                    >的申請嗎?</span
-                >
+                <span>是否已確認履歷等相關資訊 ?</span>
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteShipperDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteShipper" />
+                <Button label="No" icon="pi pi-times" text @click="approveApplicationDialog = false" />
+                <Button label="Yes" icon="pi pi-check" @click="approveresumefuntion(selectedTutor.value.MemberId, true)" />
             </template>
-        </Dialog> -->
+        </Dialog>
+
+        <Dialog v-model:visible="rejectApplicationDialog" :style="{ width: '450px' }" header="駁回申請" :modal="true">
+            <div class ="flex flex-col gap-4 justify-center items-center text-center">
+                <div class="flex items-center gap-4">
+                    <i class="pi pi-exclamation-triangle !text-3xl" />
+                    <span>確定駁回教師申請 ?</span>
+                </div>
+                <Textarea v-model="rejectReason.value" rows="3" cols="50" placeholder="請輸入駁回原因"></Textarea>
+            </div>
+            <template #footer>
+                <Button label="No" icon="pi pi-times" text @click="rejectApplicationDialog = false" />
+                <Button label="Yes" icon="pi pi-check" @click="approveresumefuntion(selectedTutor.value.MemberId, false)" />
+            </template>
+        </Dialog>
     </div>
 </template>
+
+<style scoped>
+
+.custom-secondary-button {
+    background-color: #02cab9;
+    border-color: #02cab9;
+    color: #fff;
+}
+
+.custom-secondary-button:hover {
+    background-color: #02ebd6;
+    border-color: #02ebd6;
+}
+
+</style>
