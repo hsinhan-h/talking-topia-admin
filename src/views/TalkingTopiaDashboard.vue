@@ -88,7 +88,7 @@ function setColorOptions() {
         labels: ['7月', '8月', '9月', '10月', '11月', '12月'],
         datasets: [
             {
-                label: '🌟 英語口說提升班：讓你自信流利講英語的最佳選擇',
+                label: '英文',
                 data: [0, 10, 15, 20, 0, 0],
                 fill: false,
                 backgroundColor: documentStyle.getPropertyValue('--p-primary-500'),
@@ -96,7 +96,7 @@ function setColorOptions() {
                 tension: 0.4
             },
             {
-                label: 'Akimoの日本語教室 🎌📚',
+                label: '日文',
                 data: [0, 5, 5, 19, 0, 0],
                 fill: false,
                 backgroundColor: documentStyle.getPropertyValue('--p-primary-200'),
