@@ -10,6 +10,9 @@ const approveApplicationDialog = ref(false);
 const rejectApplicationDialog = ref(false);
 
 const courseApprovalList = ref([]);
+const unApprovedCourseQty = ref(0);
+const approvedCourseQty = ref(0);
+const rejectedCourseQty = ref(0);
 const selectedCourse = ref({});
 const selectedDescription = ref(null);
 const selectedCourseImages = ref([]);
@@ -21,9 +24,17 @@ const toast = useToast();
 
 onMounted(async () => {
     try {
-        const [courseApprovalData] = await Promise.all([CourseApprovalService.getCourseApprovalList()]);
+        const [courseApprovalData, unApprovedCourseQtyData, approvedCourseQtyData, rejectedCourseQtyData] = await Promise.all([
+            CourseApprovalService.getCourseApprovalList(),
+            CourseApprovalService.getUnapprovedCourseQtyStartingFrom2024(),
+            CourseApprovalService.getApprovedCourseQtyStartingFrom2024(),
+            CourseApprovalService.getRejectedCourseQtyStartingFrom2024()
+        ]);
 
         courseApprovalList.value = courseApprovalData;
+        unApprovedCourseQty.value = unApprovedCourseQtyData;
+        approvedCourseQty.value = approvedCourseQtyData;
+        rejectedCourseQty.value = rejectedCourseQtyData;
         console.log('課程審核列表:', courseApprovalData);
     } catch (error) {
         console.error('加載數據失敗', error);
@@ -93,34 +104,49 @@ async function updateCourseApprovalList() {
 
     <div v-else>
         <div class="grid grid-cols-12 gap-8">
-            <div class="col-span-12 lg:col-span-6 xl:col-span-6">
+            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
                 <div class="card mb-0">
                     <div class="flex justify-between mb-4">
                         <div>
                             <span class="block text-muted-color font-medium mb-4">當前待審數量</span>
-                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">152</div>
+                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ unApprovedCourseQty }}</div>
                         </div>
                         <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                             <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
                         </div>
                     </div>
                     <!-- <span class="text-primary font-medium">24 new </span> -->
-                    <!-- <span class="text-muted-color">since last visit</span> -->
+                    <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
                 </div>
             </div>
-            <div class="col-span-12 lg:col-span-6 xl:col-span-6">
+            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
                 <div class="card mb-0">
                     <div class="flex justify-between mb-4">
                         <div>
-                            <span class="block text-muted-color font-medium mb-4">歷史上架數量</span>
-                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">300</div>
+                            <span class="block text-muted-color font-medium mb-4">歷史已通過數量</span>
+                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ approvedCourseQty }}</div>
                         </div>
                         <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                             <i class="pi pi-dollar text-orange-500 !text-xl"></i>
                         </div>
                     </div>
-                    <span class="text-primary font-medium">52 new </span>
-                    <span class="text-muted-color">從平台開放以來</span>
+                    <!-- <span class="text-primary font-medium">52 new </span> -->
+                    <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
+                </div>
+            </div>
+            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+                <div class="card mb-0">
+                    <div class="flex justify-between mb-4">
+                        <div>
+                            <span class="block text-muted-color font-medium mb-4">歷史已駁回數量</span>
+                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ rejectedCourseQty }}</div>
+                        </div>
+                        <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                            <i class="pi pi-dollar text-orange-500 !text-xl"></i>
+                        </div>
+                    </div>
+                    <!-- <span class="text-primary font-medium">52 new </span> -->
+                    <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
                 </div>
             </div>
         </div>
