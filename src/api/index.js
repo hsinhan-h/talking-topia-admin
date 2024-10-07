@@ -10,7 +10,7 @@ const api = {
     deleteBooking: '/api/Booking/DeleteBooking',
     getAllMemberDataList:'api/MemberManagermentApi/GetMemberDataList',
     updateMemberDatas:'api/MemberManagermentApi/UpdateMemberDataList',
-    getAllTutorDataApi:'api/MemberManagermentApi/GetTutorDataList'
+    getAllTutorDataApi:'api/MemberManagermentApi/GetTutorDataList',
     updateMemberDatas:'api/MemberManagermentApi/UpdateMemberDataList',
     getAllReviewData:'/api/Review/GetAllReviews',
     // deleteReview:'/api/Review/DeleteReview'
