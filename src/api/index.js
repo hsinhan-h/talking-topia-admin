@@ -89,5 +89,5 @@ export function deleteReview(reviewId) {
 }
 
 export function getDashboardData() {
-    return ApiRequest.httpPut(api.getDashboardDatas);
+    return ApiRequest.httpGet(api.getDashboardDatas);
 }
