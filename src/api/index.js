@@ -8,6 +8,13 @@ const api = {
     getAllBookings: '/api/Booking/GetAllBookings',
     updateBooking: '/api/Booking/UpdateBooking',
     deleteBooking: '/api/Booking/DeleteBooking',
+    getAllMemberDataList: '/api/MemberManagermentApi/GetMemberDataList',
+    updateMemberDatas: '/api/MemberManagermentApi/UpdateMemberDataList',
+    getAllTutorDataApi: '/api/MemberManagermentApi/GetTutorDataList',
+    updateMemberDatas: '/api/MemberManagermentApi/UpdateMemberDataList',
+    getAllReviewData: '/api/Review/GetAllReviews',
+    getDashboardDatas: '/api/Dashboard/GetDashboardData',
+    deleteReview:'/api/Review/DeleteReview',
     getAllMemberDataList:'api/MemberManagermentApi/GetMemberDataList',
     updateMemberDatas:'api/MemberManagermentApi/UpdateMemberDataList',
     getAllTutorDataApi:'api/MemberManagermentApi/GetTutorDataList',
@@ -71,11 +78,12 @@ export function getAllTutorData() {
     return ApiRequest.httpGet(api.getAllTutorDataApi);
 }
 
-export function getAllReviewData(){
+export function getAllReviewData() {
     return ApiRequest.httpGet(api.getAllReviewData);
 }
 
 export function deleteReview(reviewId) {
+    return ApiRequest.httpDelete(`${api.deleteReview}/${reviewId}`);
     const request={
         reviewId
     }
@@ -83,3 +91,6 @@ export function deleteReview(reviewId) {
     return ApiRequest.httpDelete(api.deleteReview,request);
 }
 
+export function getDashboardData() {
+    return ApiRequest.httpPut(api.getDashboardDatas);
+}
