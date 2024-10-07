@@ -94,8 +94,8 @@ function deleteShipper() {
             <Column field="createDateTime" header="評論時間"></Column>
             <Column :exportable="false" style="min-width: 12rem" header="編輯/刪除">
                 <template #body="slotProps">
-                    <Button icon="pi-check-circle" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" />
-                    <Button icon="pi-times-circle" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)" />
+                    <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" />
+                    <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)" />
                 </template>
             </Column>
         </DataTable>

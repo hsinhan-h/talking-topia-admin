@@ -78,6 +78,11 @@ export function getAllReviewData() {
 
 export function deleteReview(reviewId) {
     return ApiRequest.httpDelete(`${api.deleteReview}/${reviewId}`);
+    const request={
+        reviewId
+    }
+   
+    return ApiRequest.httpDelete(api.deleteReview,request);
 }
 
 export function getDashboardData() {
