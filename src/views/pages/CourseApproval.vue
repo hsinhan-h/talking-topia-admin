@@ -1,7 +1,9 @@
 <script setup>
 import { CourseApprovalService } from '@/service/CourseApprovalService';
+import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
 
+const descriptionDialog = ref(false);
 const courseImagesDialog = ref(false);
 const courseVideoDialog = ref(false);
 const approveApplicationDialog = ref(false);
@@ -9,11 +11,13 @@ const rejectApplicationDialog = ref(false);
 
 const courseApprovalList = ref([]);
 const selectedCourse = ref({});
+const selectedDescription = ref(null);
 const selectedCourseImages = ref([]);
 const selectedVideoUrl = ref(null);
 const selectedThumbnailUrl = ref(null);
 
 const isLoading = ref(true);
+const toast = useToast();
 
 onMounted(async () => {
     try {
@@ -33,9 +37,13 @@ function showCourseImages(images) {
     courseImagesDialog.value = true;
 }
 
-function showCourseVideo(videoUrl, thumbnailUrl) {
+function showCourseDescription(description) {
+    selectedDescription.value = description;
+    descriptionDialog.value = true;
+}
+
+function showCourseVideo(videoUrl) {
     selectedVideoUrl.value = videoUrl;
-    selectedThumbnailUrl.value = thumbnailUrl;
     courseVideoDialog.value = true;
 }
 
@@ -52,14 +60,32 @@ function showRejectApplicationDialog(course) {
 async function approveCoursePublishing(courseId, courseApprove) {
     try {
         await CourseApprovalService.approveCourse(courseId, courseApprove);
-        window.location.reload();
+        if (courseApprove === true) {
+            toast.add({ severity: 'success', summary: '成功', detail: '通過課程審核！', life: 3000 });
+            approveApplicationDialog.value = false;
+        } else {
+            toast.add({ severity: 'info', summary: '成功', detail: '駁回課程申請！', life: 3000 });
+            rejectApplicationDialog.value = false;
+        }
+        await updateCourseApprovalList();
     } catch (error) {
         console.error('審核課程失敗', error);
+    }
+}
+
+async function updateCourseApprovalList() {
+    try {
+        const updatedCourseApprovalData = await CourseApprovalService.getCourseApprovalList();
+        courseApprovalList.value = updatedCourseApprovalData;
+    } catch (error) {
+        console.error('更新課程審核列表失敗', error);
+        toast.add({ severity: 'error', summary: '錯誤', detail: '無法加載課程審核列表，請稍後再試。', life: 3000 });
     }
 }
 </script>
 
 <template>
+    <Toast></Toast>
     <div v-if="isLoading" class="loading-container">
         <ProgressSpinner style="width: 100px; height: 100px; stroke: #02cab9" strokeWidth="3" fill="transparent" animationDuration=".7s" aria-label="Custom ProgressSpinner" class="custom-spinner" />
         <div class="loading-text">Loading...</div>
@@ -78,8 +104,8 @@ async function approveCoursePublishing(courseId, courseApprove) {
                             <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
                         </div>
                     </div>
-                    <span class="text-primary font-medium">24 new </span>
-                    <span class="text-muted-color">since last visit</span>
+                    <!-- <span class="text-primary font-medium">24 new </span> -->
+                    <!-- <span class="text-muted-color">since last visit</span> -->
                 </div>
             </div>
             <div class="col-span-12 lg:col-span-6 xl:col-span-6">
@@ -113,22 +139,33 @@ async function approveCoursePublishing(courseId, courseApprove) {
                 <Column field="courseSubject" header="科目"></Column>
                 <Column field="twentyFiveMinUnitPrice" header="25分鐘($)"></Column>
                 <Column field="fiftyMinUnitPrice" header="50分鐘($)"></Column>
-                <Column field="description" header="課程介紹"> </Column>
+                <Column field="description" header="課程介紹">
+                    <template #body="slotProps">
+                        <Button label="點擊查看" severity="secondary" outlined @click="showCourseDescription(slotProps.data.description)" />
+                    </template>
+                </Column>
                 <Column field="courseImages" header="課程圖片">
                     <template #body="slotProps">
                         <img
                             v-if="slotProps.data.courseImages && slotProps.data.courseImages.length > 0"
                             :src="slotProps.data.courseImages[0]"
                             alt="課程圖片"
-                            style="width: 100px; height: 100px; object-fit: contain; cursor: pointer"
+                            style="width: 120px; height: 100px; object-fit: contain; cursor: pointer"
                             @click="showCourseImages(slotProps.data.courseImages)"
                         />
-                        <span v-else style="font-size: 12px; color: #aaa">教師未上傳課程圖片</span>
+                        <span v-else style="font-size: 12px; color: #aaa">未上傳圖片</span>
                     </template>
                 </Column>
                 <Column field="videoUrl" header="自介影片">
                     <template #body="slotProps">
-                        <Button label="點擊查看" severity="secondary" outlined @click="showCourseVideo(slotProps.data.videoUrl, slotProps.data.thumbnailUrl)" />
+                        <img
+                            v-if="slotProps.data.thumbnailUrl && slotProps.data.videoUrl"
+                            :src="slotProps.data.thumbnailUrl"
+                            alt="自介影片封面"
+                            style="width: 120px; height: 100px; object-fit: contain; cursor: pointer"
+                            @click="showCourseVideo(slotProps.data.videoUrl)"
+                        />
+                        <span v-else style="font-size: 12px; color: #aaa">未上傳影片</span>
                     </template>
                 </Column>
                 <Column :exportable="false" style="min-width: 12rem" header="課程審核">
@@ -143,6 +180,12 @@ async function approveCoursePublishing(courseId, courseApprove) {
             </DataTable>
         </div>
 
+        <Dialog v-model:visible="descriptionDialog" header="課程介紹" :style="{ width: '680px' }" :modal="true">
+            <div class="course-images-dialog">
+                <span v-if="selectedDescription">{{ selectedDescription }}</span>
+                <span v-else style="color: #aaa">沒有課程介紹</span>
+            </div>
+        </Dialog>
         <Dialog v-model:visible="courseImagesDialog" header="課程圖片" :style="{ width: '680px' }" :modal="true">
             <div class="course-images-dialog">
                 <img v-for="(image, index) in selectedCourseImages" :key="index" :src="image" alt="課程圖片" style="width: 300px; height: 200px; object-fit: contain" />
@@ -152,8 +195,8 @@ async function approveCoursePublishing(courseId, courseApprove) {
             <div class="course-video-dialog">
                 <div>影片連結:</div>
                 <a :href="selectedVideoUrl" target="_blank" style="display: block; margin-bottom: 0.8em; width: fit-content">{{ selectedVideoUrl }}</a>
-                <div>影片封面:</div>
-                <img :src="selectedThumbnailUrl" alt="自介影片封面" style="width: 80%; aspect-ratio: 16 / 9; object-fit: contain" />
+                <!-- <div>影片封面:</div>
+                <img :src="selectedThumbnailUrl" alt="自介影片封面" style="width: 80%; aspect-ratio: 16 / 9; object-fit: contain" /> -->
             </div>
         </Dialog>
         <Dialog v-model:visible="approveApplicationDialog" :style="{ width: '450px' }" header="通過申請" :modal="true">
