@@ -43,6 +43,8 @@ const logout = () => {
 };
 
 function setColorOptions() {
+    if (!dashboardDatas.value) return;
+
     const documentStyle = getComputedStyle(document.documentElement);
     const textColor = documentStyle.getPropertyValue('--text-color');
     const textColorSecondary = documentStyle.getPropertyValue('--text-color-secondary');
@@ -207,11 +209,8 @@ function setColorOptions() {
 
 watch(
     [getPrimary, getSurface, isDarkTheme],
-    dashboardDatas,
-    (newData) => {
-        if (newData) {
-            setColorOptions();
-        }
+    () => {
+        setColorOptions();
     },
     { immediate: true }
 );

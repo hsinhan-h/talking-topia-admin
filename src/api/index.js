@@ -8,12 +8,12 @@ const api = {
     getAllBookings: '/api/Booking/GetAllBookings',
     updateBooking: '/api/Booking/UpdateBooking',
     deleteBooking: '/api/Booking/DeleteBooking',
-    getAllMemberDataList:'/api/MemberManagermentApi/GetMemberDataList',
-    updateMemberDatas:'/api/MemberManagermentApi/UpdateMemberDataList',
-    getAllTutorDataApi:'/api/MemberManagermentApi/GetTutorDataList',
-    updateMemberDatas:'/api/MemberManagermentApi/UpdateMemberDataList',
-    getAllReviewData:'/api/Review/GetAllReviews',
-
+    getAllMemberDataList: '/api/MemberManagermentApi/GetMemberDataList',
+    updateMemberDatas: '/api/MemberManagermentApi/UpdateMemberDataList',
+    getAllTutorDataApi: '/api/MemberManagermentApi/GetTutorDataList',
+    updateMemberDatas: '/api/MemberManagermentApi/UpdateMemberDataList',
+    getAllReviewData: '/api/Review/GetAllReviews',
+    getDashboardDatas: '/api/Dashboard/GetDashboardData'
     // deleteReview:'/api/Review/DeleteReview'
 };
 
@@ -78,11 +78,6 @@ export function getAllReviewData() {
 
 export function deleteReview(reviewId) {
     return ApiRequest.httpDelete(`${api.deleteReview}/${reviewId}`);
-    const request={
-        reviewId
-    }
-   
-    return ApiRequest.httpDelete(api.deleteReview,request);
 }
 
 export function getDashboardData() {
