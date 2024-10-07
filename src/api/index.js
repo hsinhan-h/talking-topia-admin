@@ -8,6 +8,7 @@ const api = {
     getAllBookings: '/api/Booking/GetAllBookings',
     updateBooking: '/api/Booking/UpdateBooking',
     deleteBooking: '/api/Booking/DeleteBooking',
+<<<<<<< HEAD
     getAllMemberDataList:'/api/MemberManagermentApi/GetMemberDataList',
     updateMemberDatas:'/api/MemberManagermentApi/UpdateMemberDataList',
     getAllTutorDataApi:'/api/MemberManagermentApi/GetTutorDataList',
@@ -98,5 +99,5 @@ export function deleteReview(reviewId) {
 }
 
 export function getDashboardData() {
-    return ApiRequest.httpPut(api.getDashboardDatas);
+    return ApiRequest.httpGet(api.getDashboardDatas);
 }
