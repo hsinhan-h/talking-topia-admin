@@ -9,7 +9,8 @@ const api = {
     updateBooking: '/api/Booking/UpdateBooking',
     deleteBooking: '/api/Booking/DeleteBooking',
     getAllMemberDataList:'api/MemberManagermentApi/GetMemberDataList',
-    updateMemberDatas:'api/MemberManagermentApi/UpdateMemberDataList'
+    updateMemberDatas:'api/MemberManagermentApi/UpdateMemberDataList',
+    getAllTutorDataApi:'api/MemberManagermentApi/GetTutorDataList'
 };
 
 export function getAllShippers() {
@@ -62,4 +63,7 @@ export function getAllMemberDataList() {
 }
 export function updateMemberData(memberData) {
     return ApiRequest.httpPut(api.updateMemberDatas, memberData);
+}
+export function getAllTutorData() {
+    return ApiRequest.httpGet(api.getAllTutorDataApi);
 }
