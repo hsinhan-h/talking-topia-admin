@@ -13,7 +13,7 @@ const api = {
     getAllTutorDataApi:'api/MemberManagermentApi/GetTutorDataList',
     updateMemberDatas:'api/MemberManagermentApi/UpdateMemberDataList',
     getAllReviewData:'/api/Review/GetAllReviews',
-    // deleteReview:'/api/Review/DeleteReview'
+    deleteReview:'/api/Review/DeleteReview'
 };
 
 export function getAllShippers() {
@@ -76,7 +76,10 @@ export function getAllReviewData(){
 }
 
 export function deleteReview(reviewId) {
+    const request={
+        reviewId
+    }
    
-    return ApiRequest.httpDelete(`${api.deleteReview}/${reviewId}`);
+    return ApiRequest.httpDelete(api.deleteReview,request);
 }
 
