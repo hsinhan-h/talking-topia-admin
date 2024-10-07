@@ -3,13 +3,18 @@ import { CourseApprovalService } from '@/service/CourseApprovalService';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
 
+const descriptionDialog = ref(false);
 const courseImagesDialog = ref(false);
 const courseVideoDialog = ref(false);
 const approveApplicationDialog = ref(false);
 const rejectApplicationDialog = ref(false);
 
 const courseApprovalList = ref([]);
+const unApprovedCourseQty = ref(0);
+const approvedCourseQty = ref(0);
+const rejectedCourseQty = ref(0);
 const selectedCourse = ref({});
+const selectedDescription = ref(null);
 const selectedCourseImages = ref([]);
 const selectedVideoUrl = ref(null);
 const selectedThumbnailUrl = ref(null);
@@ -19,9 +24,17 @@ const toast = useToast();
 
 onMounted(async () => {
     try {
-        const [courseApprovalData] = await Promise.all([CourseApprovalService.getCourseApprovalList()]);
+        const [courseApprovalData, unApprovedCourseQtyData, approvedCourseQtyData, rejectedCourseQtyData] = await Promise.all([
+            CourseApprovalService.getCourseApprovalList(),
+            CourseApprovalService.getUnapprovedCourseQtyStartingFrom2024(),
+            CourseApprovalService.getApprovedCourseQtyStartingFrom2024(),
+            CourseApprovalService.getRejectedCourseQtyStartingFrom2024()
+        ]);
 
         courseApprovalList.value = courseApprovalData;
+        unApprovedCourseQty.value = unApprovedCourseQtyData;
+        approvedCourseQty.value = approvedCourseQtyData;
+        rejectedCourseQty.value = rejectedCourseQtyData;
         console.log('課程審核列表:', courseApprovalData);
     } catch (error) {
         console.error('加載數據失敗', error);
@@ -35,9 +48,13 @@ function showCourseImages(images) {
     courseImagesDialog.value = true;
 }
 
-function showCourseVideo(videoUrl, thumbnailUrl) {
+function showCourseDescription(description) {
+    selectedDescription.value = description;
+    descriptionDialog.value = true;
+}
+
+function showCourseVideo(videoUrl) {
     selectedVideoUrl.value = videoUrl;
-    selectedThumbnailUrl.value = thumbnailUrl;
     courseVideoDialog.value = true;
 }
 
@@ -87,34 +104,49 @@ async function updateCourseApprovalList() {
 
     <div v-else>
         <div class="grid grid-cols-12 gap-8">
-            <div class="col-span-12 lg:col-span-6 xl:col-span-6">
+            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
                 <div class="card mb-0">
                     <div class="flex justify-between mb-4">
                         <div>
                             <span class="block text-muted-color font-medium mb-4">當前待審數量</span>
-                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">152</div>
+                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ unApprovedCourseQty }}</div>
                         </div>
                         <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                             <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
                         </div>
                     </div>
                     <!-- <span class="text-primary font-medium">24 new </span> -->
-                    <!-- <span class="text-muted-color">since last visit</span> -->
+                    <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
                 </div>
             </div>
-            <div class="col-span-12 lg:col-span-6 xl:col-span-6">
+            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
                 <div class="card mb-0">
                     <div class="flex justify-between mb-4">
                         <div>
-                            <span class="block text-muted-color font-medium mb-4">歷史上架數量</span>
-                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">300</div>
+                            <span class="block text-muted-color font-medium mb-4">歷史已通過數量</span>
+                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ approvedCourseQty }}</div>
                         </div>
                         <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                             <i class="pi pi-dollar text-orange-500 !text-xl"></i>
                         </div>
                     </div>
-                    <span class="text-primary font-medium">52 new </span>
-                    <span class="text-muted-color">從平台開放以來</span>
+                    <!-- <span class="text-primary font-medium">52 new </span> -->
+                    <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
+                </div>
+            </div>
+            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+                <div class="card mb-0">
+                    <div class="flex justify-between mb-4">
+                        <div>
+                            <span class="block text-muted-color font-medium mb-4">歷史已駁回數量</span>
+                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ rejectedCourseQty }}</div>
+                        </div>
+                        <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                            <i class="pi pi-dollar text-orange-500 !text-xl"></i>
+                        </div>
+                    </div>
+                    <!-- <span class="text-primary font-medium">52 new </span> -->
+                    <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
                 </div>
             </div>
         </div>
@@ -133,22 +165,33 @@ async function updateCourseApprovalList() {
                 <Column field="courseSubject" header="科目"></Column>
                 <Column field="twentyFiveMinUnitPrice" header="25分鐘($)"></Column>
                 <Column field="fiftyMinUnitPrice" header="50分鐘($)"></Column>
-                <Column field="description" header="課程介紹"> </Column>
+                <Column field="description" header="課程介紹">
+                    <template #body="slotProps">
+                        <Button label="點擊查看" severity="secondary" outlined @click="showCourseDescription(slotProps.data.description)" />
+                    </template>
+                </Column>
                 <Column field="courseImages" header="課程圖片">
                     <template #body="slotProps">
                         <img
                             v-if="slotProps.data.courseImages && slotProps.data.courseImages.length > 0"
                             :src="slotProps.data.courseImages[0]"
                             alt="課程圖片"
-                            style="width: 100px; height: 100px; object-fit: contain; cursor: pointer"
+                            style="width: 120px; height: 100px; object-fit: contain; cursor: pointer"
                             @click="showCourseImages(slotProps.data.courseImages)"
                         />
-                        <span v-else style="font-size: 12px; color: #aaa">教師未上傳課程圖片</span>
+                        <span v-else style="font-size: 12px; color: #aaa">未上傳圖片</span>
                     </template>
                 </Column>
                 <Column field="videoUrl" header="自介影片">
                     <template #body="slotProps">
-                        <Button label="點擊查看" severity="secondary" outlined @click="showCourseVideo(slotProps.data.videoUrl, slotProps.data.thumbnailUrl)" />
+                        <img
+                            v-if="slotProps.data.thumbnailUrl && slotProps.data.videoUrl"
+                            :src="slotProps.data.thumbnailUrl"
+                            alt="自介影片封面"
+                            style="width: 120px; height: 100px; object-fit: contain; cursor: pointer"
+                            @click="showCourseVideo(slotProps.data.videoUrl)"
+                        />
+                        <span v-else style="font-size: 12px; color: #aaa">未上傳影片</span>
                     </template>
                 </Column>
                 <Column :exportable="false" style="min-width: 12rem" header="課程審核">
@@ -163,6 +206,12 @@ async function updateCourseApprovalList() {
             </DataTable>
         </div>
 
+        <Dialog v-model:visible="descriptionDialog" header="課程介紹" :style="{ width: '680px' }" :modal="true">
+            <div class="course-images-dialog">
+                <span v-if="selectedDescription">{{ selectedDescription }}</span>
+                <span v-else style="color: #aaa">沒有課程介紹</span>
+            </div>
+        </Dialog>
         <Dialog v-model:visible="courseImagesDialog" header="課程圖片" :style="{ width: '680px' }" :modal="true">
             <div class="course-images-dialog">
                 <img v-for="(image, index) in selectedCourseImages" :key="index" :src="image" alt="課程圖片" style="width: 300px; height: 200px; object-fit: contain" />
@@ -172,8 +221,8 @@ async function updateCourseApprovalList() {
             <div class="course-video-dialog">
                 <div>影片連結:</div>
                 <a :href="selectedVideoUrl" target="_blank" style="display: block; margin-bottom: 0.8em; width: fit-content">{{ selectedVideoUrl }}</a>
-                <div>影片封面:</div>
-                <img :src="selectedThumbnailUrl" alt="自介影片封面" style="width: 80%; aspect-ratio: 16 / 9; object-fit: contain" />
+                <!-- <div>影片封面:</div>
+                <img :src="selectedThumbnailUrl" alt="自介影片封面" style="width: 80%; aspect-ratio: 16 / 9; object-fit: contain" /> -->
             </div>
         </Dialog>
         <Dialog v-model:visible="approveApplicationDialog" :style="{ width: '450px' }" header="通過申請" :modal="true">
