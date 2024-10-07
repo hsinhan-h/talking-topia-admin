@@ -9,7 +9,9 @@ const api = {
     updateBooking: '/api/Booking/UpdateBooking',
     deleteBooking: '/api/Booking/DeleteBooking',
     getAllMemberDataList:'api/MemberManagermentApi/GetMemberDataList',
-    updateMemberDatas:'api/MemberManagermentApi/UpdateMemberDataList'
+    updateMemberDatas:'api/MemberManagermentApi/UpdateMemberDataList',
+    getAllReviewData:'/api/Review/GetAllReviews',
+    // deleteReview:'/api/Review/DeleteReview'
 };
 
 export function getAllShippers() {
@@ -63,3 +65,13 @@ export function getAllMemberDataList() {
 export function updateMemberData(memberData) {
     return ApiRequest.httpPut(api.updateMemberDatas, memberData);
 }
+
+export function getAllReviewData(){
+    return ApiRequest.httpGet(api.getAllReviewData);
+}
+
+export function deleteReview(reviewId) {
+   
+    return ApiRequest.httpDelete(`${api.deleteReview}/${reviewId}`);
+}
+
