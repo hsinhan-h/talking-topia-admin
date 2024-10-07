@@ -1,47 +1,19 @@
 <script setup>
-import { ShipperService } from '@/service/ShipperService';
+import { MemberData } from '@/service/MemberManagementService';
 import { onMounted, ref } from 'vue';
 
-const shipperDialog = ref(false); // Dialog相當於Bootsrap的Modal!
 
-const shippers = ref(null);
-const shipper = ref({});
+
+const showEditDialog = ref(false);
 const submitted = ref(false);
-const deleteShipperDialog = ref(false);
+const allTutorData = ref([]);
+
+
 
 onMounted(() => {
-    ShipperService.getShippers().then((data) => (shippers.value = data));
+    MemberData.getAllTutorDataList().then((data) =>(allTutorData.value = data));
 });
 
-function hideDialog() {
-    shipperDialog.value = false;
-    submitted.value = false;
-}
-
-function saveShipper() {
-    submitted.value = true;
-    console.log('準備要更新Shipper!!!!!!');
-
-    // todo 串接API
-}
-
-function editShipper(data) {
-    shipper.value = { ...data };
-    shipperDialog.value = true;
-}
-
-function confirmDeleteShipper(data) {
-    deleteShipperDialog.value = true;
-    shipper.value = data;
-}
-
-function deleteShipper() {
-    console.log('準備要刪除Shipper!!!!!!');
-    // todo 串接API
-    console.log('刪除Shipper!!!!!!');
-    console.log(shipper.value);
-    deleteShipperDialog.value = false;
-}
 </script>
 
 <template>
@@ -81,24 +53,23 @@ function deleteShipper() {
     <div style="margin: 50px"></div>
 
     <div className="card">
-        <DataTable :value="shippers" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
-            <Column field="tutorID" header="編號" sortable=""></Column>
-            <Column field="category" header="國籍"></Column>
-            <Column field="fullName" header="姓名"></Column>
-            <Column field="workExperience" header="性別"></Column>
-            <Column field="professionalLicenseUrl" header="語言"></Column>
-            <Column field="studyEndYear" header="銀行代號"></Column>
-            <Column field="subject" header="銀行帳號"></Column>
-            <Column field="applyDateTime" header="驗證時間"></Column>
+        <DataTable :value="allTutorData" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
+            <Column field="memberId" header="會員編號" sortable=""></Column>
+            <Column field="memberName" header="姓名" sortable=""></Column>
+            <Column field="applyDateTime" header="履歷申請時間"></Column>
+            <Column field="approvedDateTime" header="履歷審核通過時間"></Column>
+            <Column field="resumeStatus" header="履歷審核狀態"></Column>
+            <Column field="istutor" header="教師審核狀態"></Column>
+            <Column field="rejectReason" header="教師申請駁回原因"></Column>
             <Column :exportable="false" style="min-width: 12rem" header="編輯/刪除">
-                <template #body="slotProps">
+                <!-- <template #body="slotProps">
                     <Button icon="pi-check-circle" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" />
                     <Button icon="pi-times-circle" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)" />
-                </template>
+                </template> -->
             </Column>
         </DataTable>
 
-        <Dialog v-model:visible="deleteShipperDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <!-- <Dialog v-model:visible="deleteShipperDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
                 <span v-if="shipper"
@@ -110,6 +81,6 @@ function deleteShipper() {
                 <Button label="No" icon="pi pi-times" text @click="deleteShipperDialog = false" />
                 <Button label="Yes" icon="pi pi-check" @click="deleteShipper" />
             </template>
-        </Dialog>
+        </Dialog> -->
     </div>
 </template>
