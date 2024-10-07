@@ -8,6 +8,11 @@ const api = {
     getAllBookings: '/api/Booking/GetAllBookings',
     updateBooking: '/api/Booking/UpdateBooking',
     deleteBooking: '/api/Booking/DeleteBooking',
+    getAllMemberDataList:'/api/MemberManagermentApi/GetMemberDataList',
+    updateMemberDatas:'/api/MemberManagermentApi/UpdateMemberDataList',
+    getAllTutorDataApi:'/api/MemberManagermentApi/GetTutorDataList',
+    updateMemberDatas:'/api/MemberManagermentApi/UpdateMemberDataList',
+    getAllReviewData:'/api/Review/GetAllReviews',
     getAllMemberDataList: '/api/MemberManagermentApi/GetMemberDataList',
     updateMemberDatas: '/api/MemberManagermentApi/UpdateMemberDataList',
     getAllTutorDataApi: '/api/MemberManagermentApi/GetTutorDataList',
@@ -20,7 +25,8 @@ const api = {
     getAllTutorDataApi:'api/MemberManagermentApi/GetTutorDataList',
     updateMemberDatas:'api/MemberManagermentApi/UpdateMemberDataList',
     getAllReviewData:'/api/Review/GetAllReviews',
-    deleteReview:'/api/Review/DeleteReview'
+    deleteReview:'/api/Review/DeleteReview',
+    getDashboardDatas: '/api/Dashboard/GetDashboardData'
 };
 
 export function getAllShippers() {
