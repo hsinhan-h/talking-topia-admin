@@ -1,49 +1,69 @@
 <script setup>
 import { ShipperService } from '@/service/ShipperService';
 import { onMounted, ref } from 'vue';
+import { MemberData } from '@/service/MemberManagementService';
 
-const shipperDialog = ref(false); // Dialog相當於Bootsrap的Modal!
 
-const shippers = ref(null);
-const shipper = ref({});
+
+
+// const shipperDialog = ref(false); // Dialog相當於Bootsrap的Modal!
+// member相關
+const showEditDialog = ref(false);
 const submitted = ref(false);
-const deleteShipperDialog = ref(false);
+// const shippers = ref(null);
+// const shipper = ref({});
+
+// const deleteShipperDialog = ref(false);
+//member相關
+const allmemberdata = ref([]);
+const editMember = ref({
+    memberId: null,
+    lastName:'',
+    firstName:'',
+    memeberName: '',
+    nickName: '',
+    gender: '',
+    birthday: '',
+    phone: '',
+    email: '',
+    cdate: ''
+});
+const genderOptions = [
+    { label: '男', value: '男' },
+    { label: '女', value: '女' }
+];
 
 onMounted(() => {
     ShipperService.getShippers().then((data) => (shippers.value = data));
+    MemberData.getAllMemberDataList().then((data) =>(allmemberdata.value = data))
+    console.log(allmemberdata.value);
 });
 
 function hideDialog() {
-    shipperDialog.value = false;
+    showEditDialog.value = false;
     submitted.value = false;
 }
-
-function saveShipper() {
+function saveMemeberData() {
     submitted.value = true;
-    console.log('準備要更新Shipper!!!!!!');
-
-    // todo 串接API
+    MemberData.updateMemberDataList(editMember.value)
+        .then((response) => {
+            console.log('更新成功', response);
+            showEditDialog.value = false;
+            submitted.value = false;
+            MemberData.getAllMemberDataList().then((data) => (allmemberdata.value = data));
+        })
+        .catch((error) => {
+            console.error('更新失敗', error);
+        });
+    }
+//member更新相關
+function editMemberData(member) {
+    editMember.value = { ...member };  
+    showEditDialog.value = true;  
 }
 
-function editShipper(data) {
-    shipper.value = { ...data };
-    shipperDialog.value = true;
-}
 
-function confirmDeleteShipper(data) {
-    deleteShipperDialog.value = true;
-    shipper.value = data;
-}
-
-function deleteShipper() {
-    console.log('準備要刪除Shipper!!!!!!');
-    // todo 串接API
-    console.log('刪除Shipper!!!!!!');
-    console.log(shipper.value);
-    deleteShipperDialog.value = false;
-}
 </script>
-
 <template>
     <div class="grid grid-cols-12 gap-8">
         <div class="col-span-12 lg:col-span-6 xl:col-span-6">
@@ -81,35 +101,59 @@ function deleteShipper() {
     <div style="margin: 50px"></div>
 
     <div className="card">
-        <DataTable :value="shippers" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
-            <Column field="tutorID" header="編號" sortable=""></Column>
-            <Column field="category" header="國籍"></Column>
-            <Column field="fullName" header="姓名"></Column>
-            <Column field="schoolName" header="暱稱"></Column>
-            <Column field="workExperience" header="性別"></Column>
-            <Column field="professionalLicenseUrl" header="生日"></Column>
-            <Column field="studyEndYear" header="電話"></Column>
-            <Column field="subject" header="信箱"></Column>
-            <Column field="applyDateTime" header="註冊時間"></Column>
+        <DataTable :value="allmemberdata" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
+            <Column field="memberId" header="編號" sortable=""></Column>
+            <Column field="nationName" header="國籍"></Column>
+            <Column field="memeberName" header="姓名"></Column>
+            <Column field="nickName" header="暱稱"></Column>
+            <Column field="gender" header="性別"></Column>
+            <Column field="birthday" header="生日"></Column>
+            <Column field="phone" header="電話"></Column>
+            <Column field="email" header="信箱"></Column>
+            <Column field="cdate" header="註冊時間"></Column>
             <Column :exportable="false" style="min-width: 12rem" header="編輯/刪除">
                 <template #body="slotProps">
-                    <Button icon="pi-check-circle" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" />
-                    <Button icon="pi-times-circle" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)" />
+                    <Button icon="pi pi-user-edit" outlined rounded class="mr-2" @click="editMemberData(slotProps.data)" />
+                    <Button icon="pi pi-lock" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)"/>
                 </template>
             </Column>
         </DataTable>
-
-        <Dialog v-model:visible="deleteShipperDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
-            <div class="flex items-center gap-4">
-                <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="shipper"
-                    >確定駁回 <b>{{ shipper.companyName }}</b
-                    >的申請嗎?</span
-                >
+        <Dialog header="編輯會員資料" v-model:visible="showEditDialog" :style="{ width: '450px' }" :modal="true"> 
+        <div class="flex flex-col gap-6" >
+            <div>
+                <label class="font-bold mb-3">名字</label>
+                <InputText v-model="editMember.lastName" fluid/>
+                <label class="font-bold mb-3">姓氏</label>
+                <InputText v-model="editMember.firstName" fluid />
             </div>
+            <div>
+                <label class="block font-bold mb-3">暱稱</label>
+                <InputText v-model="editMember.nickName" fluid />
+            </div>
+            <div>
+                <label class="block font-bold mb-3">性別</label>
+                <Dropdown v-model="editMember.gender" :options="genderOptions" optionLabel="label" optionValue="value" fluid/>
+            </div>
+            <div>
+                <label class="block font-bold mb-3">生日</label>
+                <InputText v-model="editMember.birthday" placeholder="YYYY-MM-DD" fluid/>
+            </div>
+            <div>
+                <label class="block font-bold mb-3">電話</label>
+                <InputText v-model="editMember.phone" fluid/>
+            </div>
+            <div>
+                <label class="block font-bold mb-3">信箱</label>
+                <InputText v-model="editMember.email" fluid />
+            </div>
+            <div>
+                <label class="block font-bold mb-3">註冊時間</label>
+                <InputText v-model="editMember.cdate" disabled  fluid/>
+            </div>
+        </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteShipperDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteShipper" />
+                <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
+                <Button label="Save" icon="pi pi-check" @click="saveMemeberData" />
             </template>
         </Dialog>
     </div>

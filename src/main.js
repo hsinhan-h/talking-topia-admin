@@ -10,7 +10,7 @@ import ToastService from 'primevue/toastservice';
 
 import '@/assets/styles.scss';
 import '@/assets/tailwind.css';
-
+import 'primeicons/primeicons.css'
 const app = createApp(App);
 app.use(ToastService);
 const MyPreset = definePreset(Aura, {

@@ -131,7 +131,7 @@ function saveOrder() {
     <div style="margin: 50px"></div>
 
     <div className="card">
-        <DataTable :value="orders" tableStyle="min-width: 50rem">
+        <DataTable :value="orders" tableStyle="min-width: 50rem" paginator :rows="10" :rowsPerPageOptions="[10, 20, 30]">
             <Column field="transactionDate" header="訂單日期" sortable=""></Column>
             <Column field="merchantTradeNo" header="訂單編號" sortable=""></Column>
             <Column field="orderStatusId" header="訂單狀態" sortable=""></Column>

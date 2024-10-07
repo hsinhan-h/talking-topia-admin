@@ -136,10 +136,10 @@ function setColorOptions() {
     };
 
     pieData.value = {
-        labels: ['英文', '日文', '中文', '德文', '法文', '西班牙文', 'HTML/CSS', 'JavaScript', 'C#', 'SQL', 'Python', 'Java', '數學', '物理', '化學', '歷史', '地理', '生物'],
+        labels: ['英文', '日文', '中文', 'HTML/CSS', 'JavaScript', 'C#', 'SQL', '數學', '物理', '化學'],
         datasets: [
             {
-                data: [30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10, 8, 6, 4, 2, 0, 0, 0],
+                data: [30, 28, 26, 24, 22, 20, 8, 6, 4, 2],
                 backgroundColor: [
                     documentStyle.getPropertyValue('--p-red-50'),
                     documentStyle.getPropertyValue('--p-red-100'),
@@ -150,15 +150,7 @@ function setColorOptions() {
                     documentStyle.getPropertyValue('--p-red-600'),
                     documentStyle.getPropertyValue('--p-red-700'),
                     documentStyle.getPropertyValue('--p-red-800'),
-                    documentStyle.getPropertyValue('--p-red-900'),
-                    documentStyle.getPropertyValue('--p-yellow-100'),
-                    documentStyle.getPropertyValue('--p-yellow-50'),
-                    documentStyle.getPropertyValue('--p-pink-100'),
-                    documentStyle.getPropertyValue('--p-indigo-100'),
-                    documentStyle.getPropertyValue('--p-orange-100'),
-                    documentStyle.getPropertyValue('--p-pink-200'),
-                    documentStyle.getPropertyValue('--p-cyan-100'),
-                    documentStyle.getPropertyValue('--p-cyan-200')
+                    documentStyle.getPropertyValue('--p-red-900')
                 ],
                 hoverBackgroundColor: [documentStyle.getPropertyValue('--p-indigo-400'), documentStyle.getPropertyValue('--p-purple-400'), documentStyle.getPropertyValue('--p-teal-400')]
             }
@@ -287,7 +279,7 @@ watch(
                 <Chart type="bar" :data="barData" :options="barOptions"></Chart>
             </div>
         </div>
-        <div class="col-span-12 xl:col-span-6">
+        <!-- <div class="col-span-12 xl:col-span-6">
             <div class="card flex flex-col items-center">
                 <div class="font-semibold text-xl mb-4">熱門科目占比</div>
                 <Chart type="doughnut" :data="pieData" :options="pieOptions"></Chart>
@@ -298,6 +290,6 @@ watch(
                 <div class="font-semibold text-xl mb-4">熱門課程佔比</div>
                 <Chart type="doughnut" :data="pieCourseData" :options="pieCourseOptions"></Chart>
             </div>
-        </div>
+        </div> -->
     </Fluid>
 </template>
