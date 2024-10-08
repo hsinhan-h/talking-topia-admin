@@ -54,30 +54,28 @@ function deleteShipper() {
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">當前待審數量</span>
+                        <span class="block text-muted-color font-medium mb-4">當前總課程數量</span>
                         <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">152</div>
                     </div>
                     <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">24 new </span>
-                <span class="text-muted-color">since last visit</span>
+                <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-6">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">歷史上架數量</span>
+                        <span class="block text-muted-color font-medium mb-4">歷史已上架數量</span>
                         <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">300</div>
                     </div>
                     <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
                         <i class="pi pi-dollar text-orange-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">52 new </span>
-                <span class="text-muted-color">從平台開放以來</span>
+                <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
             </div>
         </div>
     </div>
@@ -88,16 +86,17 @@ function deleteShipper() {
         <DataTable :value="shippers" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem">
             <Column field="courseID" header="課程ID" sortable=""></Column>
             <Column field="courseTitle" header="課程標題"></Column>
-            <Column field="courseTitle" header="課程圖片"></Column>
             <Column field="tutorName" header="教師姓名"></Column>
             <Column field="category" header="類別"></Column>
             <Column field="subject" header="科目"></Column>
-            <Column field="twentyFiveMinUnitPrice" header="25分鐘($)"></Column>
-            <Column field="fiftyMinUnitPrice" header="50分鐘($)"></Column>
-            <Column field="videoUrl" header="上架狀態"></Column>
-            <Column field="publishDate" header="上架日期"></Column>
-            <Column field="videoUrl" header="審核狀態"></Column>
+            <!-- <Column field="twentyFiveMinUnitPrice" header="25分鐘($)"></Column>
+            <Column field="fiftyMinUnitPrice" header="50分鐘($)"></Column> -->
+            <Column field="courseTitle" header="課程圖片"></Column>
+            <Column field="videoUrl" header="上架狀態" sortable></Column>
+            <Column field="publishDate" header="上架日期" sortable></Column>
+            <Column field="videoUrl" header="審核狀態" sortable></Column>
             <Column field="courseInfo" header="課程資訊" :body="actionTemplate"></Column>
+            <Column field="courseDisable" header="下架課程" :body="actionTemplate"></Column>
         </DataTable>
 
         <Dialog v-model:visible="deleteShipperDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
