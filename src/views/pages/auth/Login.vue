@@ -14,8 +14,10 @@ const router = useRouter(); // 初始化 router 用於頁面重定向
 
 // 登入方法
 const login = async () => {
+    const url = `${import.meta.env.VITE_API_HOST}/api/auth/login`;
+    console.log(url);
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_HOST}/api/auth/login`, {
+        const response = await axios.post(url, {
             username: email.value,
             password: password.value
         });
