@@ -3,13 +3,10 @@ import { ReviewService } from '@/service/ReviewService';
 import { onMounted, ref } from 'vue';
 
 
-const shipperDialog = ref(false); // Dialog相當於Bootsrap的Modal!
 
-const shippers = ref(null);
-const shipper = ref({});
-const submitted = ref(false);
-const deleteShipperDialog = ref(false);
+const deleteReviewDialog = ref(false);
 const reviewList = ref(null);
+const review = ref({});
 
 onMounted(() => {
     ReviewService.getReviews().then((data)=>(reviewList.value = data));
@@ -17,34 +14,25 @@ onMounted(() => {
 
 });
 
-function hideDialog() {
-    shipperDialog.value = false;
-    submitted.value = false;
+function confirmedDeleteReview(data) {
+    review.value = data;
+    console.log(review.value);
+    deleteReviewDialog.value = true;
 }
 
-function saveShipper() {
-    submitted.value = true;
-    console.log('準備要更新Shipper!!!!!!');
-
-    // todo 串接API
-}
-
-function editShipper(data) {
-    shipper.value = { ...data };
-    shipperDialog.value = true;
-}
-
-function confirmDeleteShipper(data) {
-    deleteShipperDialog.value = true;
-    shipper.value = data;
-}
-
-function deleteShipper() {
-    console.log('準備要刪除Shipper!!!!!!');
-    // todo 串接API
-    console.log('刪除Shipper!!!!!!');
-    console.log(shipper.value);
-    deleteShipperDialog.value = false;
+function deleteReview(){
+    ReviewService.deleteReview(review.value.reviewId)
+    .then((response)=>{
+        console.log("要刪除評論囉!!");
+        console.log(review.value);
+        console.log('刪除成功', response);
+        deleteReviewDialog.value=false;
+        ReviewService.getReviews()
+            .then((result)=>{reviewList.value = result})
+    })
+    .catch((error) => {
+            console.error('刪除失敗', error);
+        });
 }
 </script>
 
@@ -92,25 +80,24 @@ function deleteShipper() {
             <Column field="rating" header="評分" :sortable="true"></Column>
             <Column field="commentText" header="評論內容"></Column>
             <Column field="createDateTime" header="評論時間"></Column>
-            <Column :exportable="false" style="min-width: 12rem" header="編輯/刪除">
+            <Column :exportable="false" style="min-width: 12rem" header="刪除">
                 <template #body="slotProps">
-                    <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" />
-                    <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)" />
+                    <!-- <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editShipper(slotProps.data)" /> -->
+                    <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmedDeleteReview(slotProps.data)" />
                 </template>
             </Column>
         </DataTable>
 
-        <Dialog v-model:visible="deleteShipperDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+        <Dialog v-model:visible="deleteReviewDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
             <div class="flex items-center gap-4">
                 <i class="pi pi-exclamation-triangle !text-3xl" />
-                <span v-if="shipper"
-                    >確定駁回 <b>{{ shipper.companyName }}</b
-                    >的申請嗎?</span
+                <span v-if="review"
+                    >確定刪除 <b>{{ review.fullName }}</b>對<b>{{review.courseTitle}}</b>的評論嗎?</span
                 >
             </div>
             <template #footer>
-                <Button label="No" icon="pi pi-times" text @click="deleteShipperDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="deleteShipper" />
+                <Button label="No" icon="pi pi-times" text @click="deleteReviewDialog = false" />
+                <Button label="Yes" icon="pi pi-check" @click="deleteReview" />
             </template>
         </Dialog>
     </div>
