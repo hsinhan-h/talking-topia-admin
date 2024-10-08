@@ -108,6 +108,52 @@ const router = createRouter({
                     path: '/documentation',
                     name: 'documentation',
                     component: () => import('@/views/pages/Documentation.vue')
+                },
+                {
+                    path: '/',
+                    name: 'dashboard',
+                    component: () => import('@/views/TalkingTopiaDashboard.vue'),
+                    meta: { requiresAuth: true } // 需要登入驗證
+                },
+                {
+                    path: '/pages/crud',
+                    name: 'crud',
+                    component: () => import('@/views/pages/Crud.vue')
+                },
+                {
+                    path: '/pages/member-management',
+                    name: 'member-management',
+                    component: () => import('@/views/pages/MemberManagement.vue')
+                },
+                {
+                    path: '/pages/tutor-approval',
+                    name: 'tutor-approval',
+                    component: () => import('@/views/pages/TutorApproval.vue')
+                },
+                {
+                    path: '/pages/course-management',
+                    name: 'course-management',
+                    component: () => import('@/views/pages/CourseManagement.vue')
+                },
+                {
+                    path: '/pages/course-approval',
+                    name: 'course-approval',
+                    component: () => import('@/views/pages/CourseApproval.vue')
+                },
+                {
+                    path: '/pages/order-management',
+                    name: 'order-management',
+                    component: () => import('@/views/pages/OrderManagement.vue')
+                },
+                {
+                    path: '/pages/booking-management',
+                    name: 'booking-management',
+                    component: () => import('@/views/pages/BookingManagement.vue')
+                },
+                {
+                    path: '/pages/comment-management',
+                    name: 'comment-management',
+                    component: () => import('@/views/pages/CommentManagement.vue')
                 }
             ]
         },
@@ -138,6 +184,18 @@ const router = createRouter({
             component: () => import('@/views/pages/auth/Error.vue')
         }
     ]
+});
+
+// 路由守衛，檢查是否有 JWT Token
+router.beforeEach((to, from, next) => {
+    const token = localStorage.getItem('token'); // 從 localStorage 中取得 token
+
+    if (to.meta.requiresAuth && !token) {
+        // 如果嘗試訪問受保護的頁面但沒有 token，重定向到登入頁
+        next({ name: 'login' });
+    } else {
+        next(); // 繼續導航
+    }
 });
 
 export default router;
