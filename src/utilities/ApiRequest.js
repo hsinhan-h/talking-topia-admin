@@ -13,8 +13,7 @@ const handle403Forbidden = () => {
 const useRequest = function () {
     // Note: 請根據後端API位置調整(.env)
     const API_BASE_URL = import.meta.env.VITE_API_HOST;
-    const API_BUILD_URL = import.meta.env.VITE_API_BUILD;
-    const request = axios.create({ baseURL: API_BASE_URL, buildURL: API_BUILD_URL });
+    const request = axios.create({ baseURL: API_BASE_URL });
 
     const beforeRequest = (config) => {
         // 發 request 前處理
