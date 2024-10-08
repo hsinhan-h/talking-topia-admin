@@ -161,7 +161,7 @@ async function updateCourseApprovalList() {
                     </template>
                 </Column>
                 <Column field="courseTitle" header="課程標題"></Column>
-                <Column field="courseCategory" header="分類"></Column>
+                <Column field="courseCategory" header="類別"></Column>
                 <Column field="courseSubject" header="科目"></Column>
                 <Column field="twentyFiveMinUnitPrice" header="25分鐘($)"></Column>
                 <Column field="fiftyMinUnitPrice" header="50分鐘($)"></Column>
