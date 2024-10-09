@@ -1,6 +1,8 @@
 <script setup>
 import { MemberData } from '@/service/MemberManagementService';
 import { onMounted, ref } from 'vue';
+import { useToast } from 'primevue/usetoast';
+
 
 
 
@@ -9,9 +11,10 @@ const submitted = ref(false);
 const allTutorData = ref([]);
 const approveApplicationDialog = ref(false);
 const rejectApplicationDialog = ref(false);
-const selectedTutor = ref(null);
+const selectedTutor = ref({});
 const rejectReason = ref('');
-
+const toast = useToast();
+const today = new Date().toLocaleString();;
 
 
 
@@ -21,30 +24,44 @@ onMounted(() => {
 });
 
 function showapproveApplicationDialog(tutorData) {
-    selectedTutor.value = tutorData;
+    selectedTutor.value = { ...tutorData };  
+    console.log('設置的 selectedTutor:', tutorData); 
     approveApplicationDialog.value = true;
 }
 
 function showRejectApplicationDialog(tutorData) {
-    selectedTutor.value = tutorData;
+    selectedTutor.value = { ...tutorData };
     rejectApplicationDialog.value = true;
 }
 
-
-async function approveresumefuntion(memberId, ApplyStatus) {
+async function approveresumefuntion(memberId, ApplyStatus, hasSubmittedResume) {
+    console.log('調用 approveresumefuntion:', memberId, ApplyStatus, hasSubmittedResume);  
+    if (hasSubmittedResume === 'N/A') {
+        toast.add({
+            severity: 'warn',
+            summary: '提示',
+            detail: '尚未填提交履歷！',
+            life: 3000
+        });
+        return; // 終止函數執行
+    }
     try {
-        await MemberData.approveresume({
+        const tutorDto = {
             memberId,
             ApplyStatus,
-            rejectReason: ApplyStatus ? '' : rejectReason.value,
-            isTutor: ApplyStatus ? true : false  
-        });
-
+            rejectReason:null,
+            isTutor: true,
+            approvedDateTime: today
+        };
+        
+        console.log('發送的數據:', tutorDto);  
+        const response = await MemberData.approveTutorDataList(tutorDto);
+        console.log('API 請求回應:', response); 
         if (ApplyStatus === true) {
             toast.add({
                 severity: 'success',
                 summary: '成功',
-                detail: '通過課程審核！',
+                detail: '通過教師審核！',
                 life: 3000
             });
             approveApplicationDialog.value = false;
@@ -58,9 +75,57 @@ async function approveresumefuntion(memberId, ApplyStatus) {
             rejectApplicationDialog.value = false;
         }
 
+        // 更新教師數據列表
         await updateTutorDataList();
     } catch (error) {
         console.error('教師審核失敗', error);
+    }
+}
+async function rejectresumefuntion(memberId, ApplyStatus, hasSubmittedResume, rejectresonitem) {
+    console.log('調用 approveresumefuntion:', memberId, ApplyStatus, hasSubmittedResume, rejectresonitem);  
+    if (hasSubmittedResume === 'N/A') {
+        toast.add({
+            severity: 'warn',
+            summary: '提示',
+            detail: '尚未填提交履歷！',
+            life: 3000
+        });
+        return; 
+    }
+    try {
+        const tutorDto = {
+            memberId,
+            ApplyStatus,
+            rejectReason: rejectresonitem == '無' ? null : rejectresonitem.toString().trim(),
+            isTutor: false,
+            approvedDateTime: today
+        };
+        
+        console.log('發送的數據:', tutorDto);  
+        const response = await MemberData.rejectTutorDataList(tutorDto);
+        console.log('API 請求回應:', response); 
+        if (ApplyStatus === true) {
+            toast.add({
+                severity: 'success',
+                summary: '成功',
+                detail: '通過教師審核！',
+                life: 3000
+            });
+            approveApplicationDialog.value = false;
+        } else {
+            toast.add({
+                severity: 'info',
+                summary: '提示',
+                detail: '申請未通過！',
+                life: 3000
+            });
+            rejectApplicationDialog.value = false;
+        }
+
+        // 更新教師數據列表
+        await updateTutorDataList();
+    } catch (error) {
+        console.error('教師審核過程失敗', error);
     }
 }
 
@@ -73,7 +138,9 @@ async function updateTutorDataList() {
         toast.add({ severity: 'error', summary: '錯誤', detail: '無法加載教師審核列表，請稍後再試。', life: 3000 });
     }
 }
-
+// function logSelectedTutor() {
+//     console.log('Selected Tutor:', selectedTutor.value);
+// }
 
 
 </script>
@@ -138,7 +205,7 @@ async function updateTutorDataList() {
             </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="approveApplicationDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="approveresumefuntion(selectedTutor.value.MemberId, true)" />
+                <Button label="Yes" icon="pi pi-check" @click="approveresumefuntion(selectedTutor.memberId, true, selectedTutor.applyDateTime)" />
             </template>
         </Dialog>
 
@@ -148,11 +215,11 @@ async function updateTutorDataList() {
                     <i class="pi pi-exclamation-triangle !text-3xl" />
                     <span>確定駁回教師申請 ?</span>
                 </div>
-                <Textarea v-model="rejectReason.value" rows="3" cols="50" placeholder="請輸入駁回原因"></Textarea>
+                <Textarea v-model="rejectReason" rows="3" cols="50" placeholder="請輸入駁回原因"></Textarea>
             </div>
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="rejectApplicationDialog = false" />
-                <Button label="Yes" icon="pi pi-check" @click="approveresumefuntion(selectedTutor.value.MemberId, false)" />
+                <Button label="Yes" icon="pi pi-check" @click="rejectresumefuntion(selectedTutor.memberId, false, selectedTutor.applyDateTime, rejectReason)" />
             </template>
         </Dialog>
     </div>

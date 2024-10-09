@@ -1,5 +1,5 @@
 
-import { getAllMemberDataList, updateMemberData, getAllTutorData} from '@/api/index';
+import { getAllMemberDataList, updateMemberData, getAllTutorData, approveTutorStatus, rejectTutorStatus} from '@/api/index';
 
 export const MemberData = {
     getAllMemberDataList() {
@@ -31,6 +31,32 @@ export const MemberData = {
     getAllTutorDataList() {
         return new Promise((resolve, reject) => {
             getAllTutorData()
+                .then((data) => {
+                    console.log('教師資料:', data); 
+                    resolve(data); 
+                })
+                .catch((error) => {
+                    console.error('獲取教師資料失敗:', error); 
+                    reject(error); 
+                });
+        });
+    },
+    approveTutorDataList(tutorDto) {
+        return new Promise((resolve, reject) => {
+            approveTutorStatus(tutorDto)
+                .then((data) => {
+                    console.log('教師資料:', data); 
+                    resolve(data); 
+                })
+                .catch((error) => {
+                    console.error('獲取教師資料失敗:', error); 
+                    reject(error); 
+                });
+        });
+    },
+    rejectTutorDataList(tutorDto) {
+        return new Promise((resolve, reject) => {
+            rejectTutorStatus(tutorDto)
                 .then((data) => {
                     console.log('教師資料:', data); 
                     resolve(data); 
