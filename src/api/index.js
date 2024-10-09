@@ -16,7 +16,8 @@ const api = {
     getDashboardDatas: '/api/Dashboard/GetDashboardData',
     deleteReview:'/api/Review/DeleteReview',
     approveTutor:'/api/MemberManagermentApi/ApproveTutorData',
-    rejectTutor:'/api/MemberManagermentApi/RejectTutorData'
+    rejectTutor:'/api/MemberManagermentApi/RejectTutorData',
+    tutorInformationUrl:'/api/MemberManagermentApi/TutorDataInformation'
 };
 
 export function getAllShippers() {
@@ -90,5 +91,8 @@ export function approveTutorStatus(tutorDto) {
 }
 export function rejectTutorStatus(tutorDto) {
     return ApiRequest.httpPut(api.rejectTutor,tutorDto);
+}
+export function tutorInformationStatus() {
+    return ApiRequest.httpGet(api.tutorInformationUrl);
 }
 

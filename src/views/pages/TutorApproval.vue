@@ -1,13 +1,10 @@
 <script setup>
-import { MemberData } from '@/service/MemberManagementService';
 import { onMounted, ref } from 'vue';
 import { useToast } from 'primevue/usetoast';
+import { MemberData } from '@/service/MemberManagementService';
 
 
 
-
-const showEditDialog = ref(false);
-const submitted = ref(false);
 const allTutorData = ref([]);
 const approveApplicationDialog = ref(false);
 const rejectApplicationDialog = ref(false);
@@ -15,12 +12,41 @@ const selectedTutor = ref({});
 const rejectReason = ref('');
 const toast = useToast();
 const today = new Date().toLocaleString();;
+const allTutorDataCount = ref({});
 
 
 
 
 onMounted(() => {
-    MemberData.getAllTutorDataList().then((data) =>(allTutorData.value = data));
+    // 獲取導師數據列表
+    MemberData.getAllTutorDataList()
+        .then((data) => {
+            allTutorData.value = data;
+        })
+        .catch((error) => {
+            console.error('獲取導師數據時發生錯誤:', error);
+            toast.add({
+                severity: 'error',
+                summary: '錯誤',
+                detail: '無法加載導師數據，請稍後再試。',
+                life: 3000
+            });
+        });
+
+    // 獲取導師統計數據
+    MemberData.tutorInformation()
+        .then((data) => {
+            allTutorDataCount.value = data;
+        })
+        .catch((error) => {
+            console.error('獲取導師統計信息時發生錯誤:', error);
+            toast.add({
+                severity: 'error',
+                summary: '錯誤',
+                detail: '無法加載導師統計信息，請稍後再試。',
+                life: 3000
+            });
+        });
 });
 
 function showapproveApplicationDialog(tutorData) {
@@ -77,6 +103,7 @@ async function approveresumefuntion(memberId, ApplyStatus, hasSubmittedResume) {
 
         // 更新教師數據列表
         await updateTutorDataList();
+        await updateTutorStatistics();
     } catch (error) {
         console.error('教師審核失敗', error);
     }
@@ -124,6 +151,7 @@ async function rejectresumefuntion(memberId, ApplyStatus, hasSubmittedResume, re
 
         // 更新教師數據列表
         await updateTutorDataList();
+        await updateTutorStatistics();
     } catch (error) {
         console.error('教師審核過程失敗', error);
     }
@@ -138,43 +166,77 @@ async function updateTutorDataList() {
         toast.add({ severity: 'error', summary: '錯誤', detail: '無法加載教師審核列表，請稍後再試。', life: 3000 });
     }
 }
-// function logSelectedTutor() {
-//     console.log('Selected Tutor:', selectedTutor.value);
-// }
-
+async function updateTutorStatistics() {
+    try {
+        const updatedStatistics = await MemberData.tutorInformation();
+        allTutorDataCount.value = updatedStatistics || {};
+    } catch (error) {
+        console.error('更新導師統計數據失敗:', error);
+    }
+}
 
 </script>
 
 <template>
     <div class="grid grid-cols-12 gap-8">
-        <div class="col-span-12 lg:col-span-6 xl:col-span-6">
+        <div class="col-span-12 lg:col-span-3 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">當前教師數量</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">152</div>
+                        <span class="block text-muted-color font-medium mb-4">當前會員數量</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{allTutorDataCount.memberCount}}</div>
                     </div>
                     <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
+                        <i class="pi pi-users text-blue-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">24 new </span>
-                <span class="text-muted-color">since last visit</span>
+                <span class="text-primary font-medium">{{ allTutorDataCount.monthlyNewMemberCount }} new </span>
+                <div class="text-muted-color">自{{ allTutorDataCount.currentMonth}}月以來</div>
             </div>
         </div>
-        <div class="col-span-12 lg:col-span-6 xl:col-span-6">
+        <div class="col-span-12 lg:col-span-3 xl:col-span-3">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">已上架課程教師數量</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">300</div>
+                        <span class="block text-muted-color font-medium mb-4">已成為教師的數量</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ allTutorDataCount.isTutorCount }}</div>
                     </div>
-                    <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-dollar text-orange-500 !text-xl"></i>
+                    <div class="flex items-center justify-center bg-green-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-verified text-green-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">52 new </span>
-                <span class="text-muted-color">從平台開放以來</span>
+                <span class="text-primary font-medium">{{ allTutorDataCount.monthlyIsTutorCount }} new </span>
+                <div class="text-muted-color">自{{ allTutorDataCount.currentMonth}}月以來</div>
+            </div>
+        </div>
+        <div class="col-span-12 lg:col-span-3 xl:col-span-3">
+            <div class="card mb-0">
+                <div class="flex justify-between mb-4">
+                    <div>
+                        <span class="block text-muted-color font-medium mb-4">已申請履歷數量</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ allTutorDataCount.applyCount }}</div>
+                    </div>
+                    <div class="flex items-center justify-center bg-red-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-book text-red-500 !text-xl"></i>
+                    </div>
+                </div>
+                <span class="text-primary font-medium">{{ allTutorDataCount.monthlyApplyCount }} new </span>
+                <div class="text-muted-color">自{{ allTutorDataCount.currentMonth}}月以來</div>
+            </div>
+        </div>
+        <div class="col-span-12 lg:col-span-3 xl:col-span-3">
+            <div class="card mb-0">
+                <div class="flex justify-between mb-4">
+                    <div>
+                        <span class="block text-muted-color font-medium mb-4">已駁回申請的數量</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ allTutorDataCount.pendingReviewCount }}</div>
+                    </div>
+                    <div class="flex items-center justify-center bg-yellow-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-thumbs-down text-orange-500 !text-xl"></i>
+                    </div>
+                </div>
+                <span class="text-primary font-medium">{{ allTutorDataCount.monthlyPendingReviewCount }} new </span>
+                <div class="text-muted-color">自{{ allTutorDataCount.currentMonth}}月以來</div>
             </div>
         </div>
     </div>

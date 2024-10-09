@@ -6,14 +6,11 @@ import { MemberData } from '@/service/MemberManagementService';
 
 
 
-// const shipperDialog = ref(false); // Dialog相當於Bootsrap的Modal!
+
 // member相關
 const showEditDialog = ref(false);
 const submitted = ref(false);
-// const shippers = ref(null);
-// const shipper = ref({});
 
-// const deleteShipperDialog = ref(false);
 //member相關
 const allmemberdata = ref([]);
 const editMember = ref({
