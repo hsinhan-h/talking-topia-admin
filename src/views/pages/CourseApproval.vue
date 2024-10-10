@@ -155,7 +155,7 @@ async function updateCourseApprovalList() {
         <div className="card">
             <DataTable :value="courseApprovalList" paginator :rows="6" :rowsPerPageOptions="[6, 12, 18]" tableStyle="min-width: 50rem" class="course-approval-table" emptyMessage="目前沒有待審核的課程">
                 <Column field="tutorName" header="教師姓名"></Column>
-                <Column field="applyDate" header="申請時間">
+                <Column field="applyDate" header="申請時間" :sortable="true">
                     <template #body="slotProps">
                         <span v-html="slotProps.data.applyDate.substring(0, 19).replace('T', '<br />')"></span>
                     </template>
