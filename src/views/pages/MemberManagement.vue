@@ -23,8 +23,9 @@ const editMember = ref({
     birthday: '',
     phone: '',
     email: '',
-    cdate: ''
+    cdate: '',
 });
+const allmemberDatacount = ref({});
 const selectedTutor =  ref({});
 const memberLockDialog  = ref(false);
 const genderOptions = [
@@ -36,6 +37,8 @@ onMounted(() => {
     ShipperService.getShippers().then((data) => (shippers.value = data));
     MemberData.getAllMemberDataList().then((data) =>(allmemberdata.value = data))
     console.log(allmemberdata.value);
+    MemberData.getmemberDataCountStatus().then((data) =>(allmemberDatacount.value = data))
+    console.log(`count:${allmemberDatacount.value}`);
 });
 
 function hideDialog() {
@@ -86,29 +89,29 @@ function MemberLockfuntion(memberId){
                 <div class="flex justify-between mb-4">
                     <div>
                         <span class="block text-muted-color font-medium mb-4">當前會員數量</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">152</div>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{allmemberDatacount.memberCount}}</div>
                     </div>
                     <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
+                        <i class="pi pi-users text-blue-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">24 new </span>
-                <span class="text-muted-color">since last visit</span>
+                <span class="text-primary font-medium">{{ allmemberDatacount.monthlyNewMemberCount}} new </span>
+                <div class="text-muted-color">自{{ allmemberDatacount.currentMonth}}月以來</div>
             </div>
         </div>
         <div class="col-span-12 lg:col-span-6 xl:col-span-6">
             <div class="card mb-0">
                 <div class="flex justify-between mb-4">
                     <div>
-                        <span class="block text-muted-color font-medium mb-4">有消費會員數量</span>
-                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">300</div>
+                        <span class="block text-muted-color font-medium mb-4">已停權會員的數量</span>
+                        <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{allmemberDatacount.blockAccessCount}}</div>
                     </div>
                     <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                        <i class="pi pi-dollar text-orange-500 !text-xl"></i>
+                        <i class="pi pi-eye-slash text-orange-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">52 new </span>
-                <span class="text-muted-color">從平台開放以來</span>
+                <span class="text-primary font-medium">{{ allmemberDatacount.monthlyBlockAccessCount}} new </span>
+                <div class="text-muted-color">自{{ allmemberDatacount.currentMonth}}月以來</div>
             </div>
         </div>
     </div>
@@ -126,9 +129,10 @@ function MemberLockfuntion(memberId){
             <Column field="phone" header="電話"></Column>
             <Column field="email" header="信箱"></Column>
             <Column field="cdate" header="註冊時間"></Column>
-            <Column :exportable="false" style="min-width: 12rem" header="編輯/刪除">
+            <Column field="isEmailConfirmed" header="是否停權"></Column>
+            <Column :exportable="false" style="min-width: 12rem" header="編輯/停權">
                 <template #body="slotProps">
-                    <Button icon="pi pi-user-edit" outlined rounded class="mr-2" @click="editMemberData(slotProps.data)" />
+                    <Button icon="pi pi-user-edit" outlined rounded class="mr-2" @click="editMemberData(slotProps.data)" :disabled="slotProps.data.isEmailConfirmed === '已停權'"  />
                     <Button icon="pi pi-lock" outlined rounded severity="danger" @click="showMemberLockDialog(slotProps.data)"/>
                 </template>
             </Column>
