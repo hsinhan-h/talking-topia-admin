@@ -14,7 +14,12 @@ const api = {
     updateMemberDatas: '/api/MemberManagermentApi/UpdateMemberDataList',
     getAllReviewData: '/api/Review/GetAllReviews',
     getDashboardDatas: '/api/Dashboard/GetDashboardData',
-    deleteReview:'/api/Review/DeleteReview'
+    deleteReview:'/api/Review/DeleteReview',
+    approveTutor:'/api/MemberManagermentApi/ApproveTutorData',
+    rejectTutor:'/api/MemberManagermentApi/RejectTutorData',
+    tutorInformationUrl:'/api/MemberManagermentApi/TutorDataInformation',
+    lockingStatusUrl:'/api/MemberManagermentApi/UpdateMemberAccoutType',
+    memberDataCountUrl:'/api/MemberManagermentApi/MemberDataCountInformation'
 };
 
 export function getAllShippers() {
@@ -66,7 +71,7 @@ export function getAllMemberDataList() {
     return ApiRequest.httpGet(api.getAllMemberDataList);
 }
 export function updateMemberData(memberData) {
-    return ApiRequest.httpPut(api.updateMemberDatas, memberData);
+    return ApiRequest.httpPut(api.updateMemberDatas,memberData);
 }
 export function getAllTutorData() {
     return ApiRequest.httpGet(api.getAllTutorDataApi);
@@ -82,4 +87,19 @@ export function deleteReview(reviewId) {
 
 export function getDashboardData() {
     return ApiRequest.httpGet(api.getDashboardDatas);
+}
+export function approveTutorStatus(tutorDto) {
+    return ApiRequest.httpPut(api.approveTutor,tutorDto);
+}
+export function rejectTutorStatus(tutorDto) {
+    return ApiRequest.httpPut(api.rejectTutor,tutorDto);
+}
+export function tutorInformationStatus() {
+    return ApiRequest.httpGet(api.tutorInformationUrl);
+}
+export function lockingStatus(memberId) {
+    return ApiRequest.httpPut(`${api.lockingStatusUrl}?memberId=${memberId}`);
+}
+export function getmemberDataCount() {
+    return ApiRequest.httpGet(api.memberDataCountUrl);
 }

@@ -12,6 +12,33 @@ const deleteBookingDialog = ref(false);
 
 const isLoading = ref(true);
 
+const dropdownItems = ref([
+    { name: '01:00', code: '1:00' },
+    { name: '02:00', code: '2:00' },
+    { name: '03:00', code: '3:00' },
+    { name: '04:00', code: '4:00' },
+    { name: '05:00', code: '5:00' },
+    { name: '06:00', code: '6:00' },
+    { name: '07:00', code: '7:00' },
+    { name: '08:00', code: '8:00' },
+    { name: '09:00', code: '9:00' },
+    { name: '10:00', code: '10:00' },
+    { name: '11:00', code: '11:00' },
+    { name: '12:00', code: '12:00' },
+    { name: '13:00', code: '13:00' },
+    { name: '14:00', code: '14:00' },
+    { name: '15:00', code: '15:00' },
+    { name: '16:00', code: '16:00' },
+    { name: '17:00', code: '17:00' },
+    { name: '18:00', code: '18:00' },
+    { name: '19:00', code: '19:00' },
+    { name: '20:00', code: '20:00' },
+    { name: '21:00', code: '21:00' },
+    { name: '22:00', code: '22:00' },
+    { name: '23:00', code: '23:00' },
+    { name: '24:00', code: '24:00' }
+]);
+
 onMounted(() => {
     try {
         BookingService.getBookings().then((data) => {
@@ -160,7 +187,7 @@ function deleteBooking() {
             <Column field="surplus" header="剩餘堂數" sortable=""></Column>
             <Column :exportable="false" style="min-width: 5rem" header="編輯/刪除">
                 <template #body="slotProps">
-                    <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editBooking(slotProps.data)" />
+                    <Button icon="pi pi-pencil" style="color: #02cab9; border-color: #02cab9" outlined rounded class="mr-2" @click="editBooking(slotProps.data)" />
                     <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmDeleteBooking(slotProps.data)" />
                 </template>
             </Column>
@@ -178,11 +205,11 @@ function deleteBooking() {
                 </div>
                 <div>
                     <label for="bookingDate" class="block font-bold mb-3">預約日期</label>
-                    <InputText id="bookingDate" v-model.trim="booking.bookingDate" autofocus required="true" :invalid="submitted && !booking.bookingDate" fluid />
+                    <DatePicker id="bookingDate" :showIcon="true" class="w-full" :showButtonBar="true" v-model="booking.bookingDate" :invalid="submitted && !booking.bookingDate"></DatePicker>
                 </div>
                 <div>
                     <label for="bookingTime" class="block font-bold mb-3">預約時間</label>
-                    <InputText id="bookingTime" v-model.trim="booking.bookingTime" required="true" :invalid="submitted && !booking.bookingDate" fluid />
+                    <Select id="bookingTime" v-model="booking.bookingTime" :options="dropdownItems" optionLabel="name" optionValue="code" placeholder="預約時間" class="w-full" :invalid="submitted && !booking.bookingTime"></Select>
                 </div>
             </div>
             <template #footer>
