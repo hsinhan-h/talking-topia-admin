@@ -104,6 +104,7 @@ function MemberLockfuntion(memberId){
             console.log('更新成功', response);
             memberLockDialog.value= false
             MemberData.getAllMemberDataList().then((data) => (allmemberdata.value = data));
+            MemberData.getmemberDataCountStatus().then((data) => (allmemberDatacount.value = data));
             toast.add({
                 severity: 'success',
                 summary: '成功',
