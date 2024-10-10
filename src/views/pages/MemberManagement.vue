@@ -25,6 +25,8 @@ const editMember = ref({
     email: '',
     cdate: ''
 });
+const selectedTutor =  ref({});
+const memberLockDialog  = ref(false);
 const genderOptions = [
     { label: '男', value: '男' },
     { label: '女', value: '女' }
@@ -57,6 +59,22 @@ function saveMemeberData() {
 function editMemberData(member) {
     editMember.value = { ...member };  
     showEditDialog.value = true;  
+}
+function showMemberLockDialog(tutorData) {
+    selectedTutor.value = { ...tutorData };
+    memberLockDialog.value = true;
+}
+function MemberLockfuntion(memberId){
+    console.log("Selected Member ID:", memberId);
+    MemberData.updateLockingStatus(memberId)
+    .then((response) => {
+            console.log('更新成功', response);
+            memberLockDialog.value= false
+            MemberData.getAllMemberDataList().then((data) => (allmemberdata.value = data));
+        })
+        .catch((error) => {
+            console.error('更新失敗', error);
+        });
 }
 
 
@@ -111,7 +129,7 @@ function editMemberData(member) {
             <Column :exportable="false" style="min-width: 12rem" header="編輯/刪除">
                 <template #body="slotProps">
                     <Button icon="pi pi-user-edit" outlined rounded class="mr-2" @click="editMemberData(slotProps.data)" />
-                    <Button icon="pi pi-lock" outlined rounded severity="danger" @click="confirmDeleteShipper(slotProps.data)"/>
+                    <Button icon="pi pi-lock" outlined rounded severity="danger" @click="showMemberLockDialog(slotProps.data)"/>
                 </template>
             </Column>
         </DataTable>
@@ -151,6 +169,18 @@ function editMemberData(member) {
             <template #footer>
                 <Button label="Cancel" icon="pi pi-times" text @click="hideDialog" />
                 <Button label="Save" icon="pi pi-check" @click="saveMemeberData" />
+            </template>
+        </Dialog>
+        <Dialog v-model:visible="memberLockDialog" :style="{ width: '450px' }" header="駁回申請" :modal="true">
+            <div class ="flex flex-col gap-4 justify-center items-center text-center">
+                <div class="flex items-center gap-4">
+                    <i class="pi pi-exclamation-triangle !text-3xl" />
+                    <span>確定要禁止此帳號權限 ?</span>
+                </div>
+            </div>
+            <template #footer>
+                <Button label="No" icon="pi pi-times" text @click="memberLockDialog = false" />
+                <Button label="Yes" icon="pi pi-check" @click="MemberLockfuntion(selectedTutor.memberId)" />
             </template>
         </Dialog>
     </div>
