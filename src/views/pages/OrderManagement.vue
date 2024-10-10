@@ -144,7 +144,7 @@ function saveOrder() {
             <Column field="totalPrice" header="訂單總額" sortable=""></Column>
             <Column :exportable="false" style="min-width: 5rem" header="編輯">
                 <template #body="slotProps">
-                    <Button icon="pi pi-pencil" outlined rounded class="mr-2" @click="editOrder(slotProps.data)" />
+                    <Button icon="pi pi-pencil" style="color: #02cab9; border-color: #02cab9" outlined rounded class="mr-2" @click="editOrder(slotProps.data)" />
                 </template>
             </Column>
         </DataTable>
