@@ -2,6 +2,7 @@
 import { ShipperService } from '@/service/ShipperService';
 import { onMounted, ref } from 'vue';
 import { MemberData } from '@/service/MemberManagementService';
+import { useToast } from 'primevue/usetoast';
 
 
 
@@ -10,6 +11,9 @@ import { MemberData } from '@/service/MemberManagementService';
 // member相關
 const showEditDialog = ref(false);
 const submitted = ref(false);
+const toast = useToast();
+const phoneError = ref(false);
+const emailError = ref(false);
 
 //member相關
 const allmemberdata = ref([]);
@@ -46,6 +50,32 @@ function hideDialog() {
     submitted.value = false;
 }
 function saveMemeberData() {
+    validatePhone();
+    validateEmail();
+
+    // 如果 phoneError 為 true，表示手機號碼不符合規範，阻止提交
+    if (phoneError.value ) {
+        console.log('手機號碼無效，無法提交');
+        // 可以顯示一個錯誤提示給使用者，或使用 toast 通知
+        toast.add({
+            severity: 'error',
+            summary: '錯誤',
+            detail: '手機號碼格式不正確，必須以09開頭且長度為10位數。',
+            life: 3000
+        });
+        return; // 阻止提交
+    }
+    if (emailError.value ) {
+        console.log('信箱無效，無法提交');
+        // 可以顯示一個錯誤提示給使用者，或使用 toast 通知
+        toast.add({
+            severity: 'error',
+            summary: '錯誤',
+            detail: '信箱格式不正確，必須為example@mail.com。',
+            life: 3000
+        });
+        return; // 阻止提交
+    }
     submitted.value = true;
     MemberData.updateMemberDataList(editMember.value)
         .then((response) => {
@@ -74,10 +104,30 @@ function MemberLockfuntion(memberId){
             console.log('更新成功', response);
             memberLockDialog.value= false
             MemberData.getAllMemberDataList().then((data) => (allmemberdata.value = data));
+            toast.add({
+                severity: 'success',
+                summary: '成功',
+                detail: '會員停權成功！',
+                life: 3000
+            });
         })
         .catch((error) => {
             console.error('更新失敗', error);
+            toast.add({
+                severity: 'error',
+                summary: '失敗',
+                detail: '會員停權失敗！',
+                life: 3000
+            });
         });
+}
+function validatePhone() {
+const phonePattern = /^09\d{8}$/;
+phoneError.value = !phonePattern.test(editMember.value.phone);
+}
+function validateEmail() {
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    emailError.value = !emailPattern.test(editMember.value.email);
 }
 
 
@@ -159,11 +209,25 @@ function MemberLockfuntion(memberId){
             </div>
             <div>
                 <label class="block font-bold mb-3">電話</label>
-                <InputText v-model="editMember.phone" fluid/>
+                <InputText 
+                    v-model="editMember.phone" 
+                    @input="validatePhone" 
+                    :class="{ 'p-invalid': phoneError }" 
+                    placeholder="09XXXXXXXX" 
+                    fluid
+                />
+                <small v-if="phoneError" class="p-error custom-text-danger">手機號碼必須以09開頭且長度為10位數。</small>
             </div>
             <div>
                 <label class="block font-bold mb-3">信箱</label>
-                <InputText v-model="editMember.email" fluid />
+                <InputText 
+                    v-model="editMember.email" 
+                    @input="validateEmail" 
+                    :class="{ 'p-invalid': emailError }" 
+                    placeholder="example@mail.com" 
+                    fluid
+                />
+                <small v-if="emailError" class="p-error custom-text-danger">請輸入正確的信箱格式</small>
             </div>
             <div>
                 <label class="block font-bold mb-3">註冊時間</label>
@@ -189,3 +253,11 @@ function MemberLockfuntion(memberId){
         </Dialog>
     </div>
 </template>
+<style scoped>
+
+.custom-text-danger{
+color: rgb(232, 171, 158);
+}
+
+
+</style>
