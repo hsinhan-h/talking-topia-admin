@@ -11,6 +11,11 @@ const yearCount = ref(0);
 
 const isLoading = ref(true);
 
+const dropdownItems = ref([
+    { name: '待付款：0', code: '0' },
+    { name: '已成功：1', code: '1' }
+]);
+
 onMounted(() => {
     try {
         OrderService.getOrders().then((data) => {
@@ -147,8 +152,8 @@ function saveOrder() {
         <Dialog v-model:visible="orderDialog" :style="{ width: '450px' }" header="訂單明細" :modal="true">
             <div class="flex flex-col gap-6">
                 <div>
-                    <label for="orderStatusId" class="block font-bold mb-3">訂單狀態（待付款：0／已成功：1）</label>
-                    <InputText id="orderStatusId" v-model.trim="order.orderStatusId" autofocus required="true" :invalid="submitted && !order.orderStatusId" fluid />
+                    <label for="orderStatusId" class="block font-bold mb-3">訂單狀態</label>
+                    <Select id="orderStatusId" v-model="order.orderStatusId" :options="dropdownItems" optionLabel="name" optionValue="code" placeholder="訂單狀態" class="w-full" :invalid="submitted && !order.orderStatusId"></Select>
                 </div>
                 <div>
                     <label for="fullName" class="block font-bold mb-3">會員姓名</label>
