@@ -11,37 +11,56 @@ const rejectApplicationDialog = ref(false);
 
 const courseApprovalList = ref([]);
 const unApprovedCourseQty = ref(0);
+const newUnApprovedCourseQty = ref(0);
 const approvedCourseQty = ref(0);
+const newApprovedCourseQty = ref(0);
 const rejectedCourseQty = ref(0);
+const newRejectedCourseQty = ref(0);
 const selectedCourse = ref({});
 const selectedDescription = ref(null);
 const selectedCourseImages = ref([]);
 const selectedVideoUrl = ref(null);
-const selectedThumbnailUrl = ref(null);
+
+const firstDayOfMonthText = ref(null);
 
 const isLoading = ref(true);
 const toast = useToast();
 
 onMounted(async () => {
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    firstDayOfMonthText.value = `${firstDayOfMonth.getFullYear()}/${(firstDayOfMonth.getMonth() + 1).toString().padStart(2, '0')}/${firstDayOfMonth.getDate().toString().padStart(2, '0')} 00:00`;
+
+    loadCourseData();
+});
+
+async function loadCourseData() {
     try {
-        const [courseApprovalData, unApprovedCourseQtyData, approvedCourseQtyData, rejectedCourseQtyData] = await Promise.all([
+        const [courseApprovalData, unApprovedCourseQtyData, newUnApprovedCourseQtyData, approvedCourseQtyData, newApprovedCourseQtyData, rejectedCourseQtyData, newRejectedCourseQtyData] = await Promise.all([
             CourseApprovalService.getCourseApprovalList(),
-            CourseApprovalService.getUnapprovedCourseQtyStartingFrom2024(),
-            CourseApprovalService.getApprovedCourseQtyStartingFrom2024(),
-            CourseApprovalService.getRejectedCourseQtyStartingFrom2024()
+            CourseApprovalService.getCourseQtyByCoursesStatus(0, false),
+            CourseApprovalService.getCourseQtyByCoursesStatus(0, true),
+            CourseApprovalService.getCourseQtyByCoursesStatus(1, false),
+            CourseApprovalService.getCourseQtyByCoursesStatus(1, true),
+            CourseApprovalService.getCourseQtyByCoursesStatus(2, false),
+            CourseApprovalService.getCourseQtyByCoursesStatus(2, true)
         ]);
 
         courseApprovalList.value = courseApprovalData;
         unApprovedCourseQty.value = unApprovedCourseQtyData;
+        newUnApprovedCourseQty.value = newUnApprovedCourseQtyData;
         approvedCourseQty.value = approvedCourseQtyData;
+        newApprovedCourseQty.value = newApprovedCourseQtyData;
         rejectedCourseQty.value = rejectedCourseQtyData;
+        newRejectedCourseQty.value = newRejectedCourseQtyData;
         console.log('課程審核列表:', courseApprovalData);
     } catch (error) {
         console.error('加載數據失敗', error);
+        toast.add({ severity: 'error', summary: '錯誤', detail: '無法加載課程審核列表，請稍後再試。', life: 3000 });
     } finally {
         isLoading.value = false;
     }
-});
+}
 
 function showCourseImages(images) {
     selectedCourseImages.value = images;
@@ -78,19 +97,9 @@ async function approveCoursePublishing(courseId, courseApprove) {
             toast.add({ severity: 'info', summary: '成功', detail: '駁回課程申請！', life: 3000 });
             rejectApplicationDialog.value = false;
         }
-        await updateCourseApprovalList();
+        await loadCourseData();
     } catch (error) {
         console.error('審核課程失敗', error);
-    }
-}
-
-async function updateCourseApprovalList() {
-    try {
-        const updatedCourseApprovalData = await CourseApprovalService.getCourseApprovalList();
-        courseApprovalList.value = updatedCourseApprovalData;
-    } catch (error) {
-        console.error('更新課程審核列表失敗', error);
-        toast.add({ severity: 'error', summary: '錯誤', detail: '無法加載課程審核列表，請稍後再試。', life: 3000 });
     }
 }
 </script>
@@ -108,45 +117,45 @@ async function updateCourseApprovalList() {
                 <div class="card mb-0">
                     <div class="flex justify-between mb-4">
                         <div>
-                            <span class="block text-muted-color font-medium mb-4">當前待審數量</span>
+                            <span class="block text-muted-color font-medium mb-4">當前待審課程數量</span>
                             <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ unApprovedCourseQty }}</div>
                         </div>
                         <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                            <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
+                            <i class="pi pi-book text-blue-500 !text-xl"></i>
                         </div>
                     </div>
-                    <!-- <span class="text-primary font-medium">24 new </span> -->
-                    <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
+                    <span class="text-primary font-medium">{{ newUnApprovedCourseQty }} new </span>
+                    <div class="text-muted-color">自 {{ firstDayOfMonthText }} 以來</div>
                 </div>
             </div>
             <div class="col-span-12 lg:col-span-6 xl:col-span-4">
                 <div class="card mb-0">
                     <div class="flex justify-between mb-4">
                         <div>
-                            <span class="block text-muted-color font-medium mb-4">歷史已通過數量</span>
+                            <span class="block text-muted-color font-medium mb-4">已通過的課程數量</span>
                             <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ approvedCourseQty }}</div>
                         </div>
                         <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                            <i class="pi pi-dollar text-orange-500 !text-xl"></i>
+                            <i class="pi pi-verified text-green-500 !text-xl"></i>
                         </div>
                     </div>
-                    <!-- <span class="text-primary font-medium">52 new </span> -->
-                    <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
+                    <span class="text-primary font-medium">{{ newApprovedCourseQty }} new </span>
+                    <div class="text-muted-color">自 {{ firstDayOfMonthText }} 以來</div>
                 </div>
             </div>
             <div class="col-span-12 lg:col-span-6 xl:col-span-4">
                 <div class="card mb-0">
                     <div class="flex justify-between mb-4">
                         <div>
-                            <span class="block text-muted-color font-medium mb-4">歷史已駁回數量</span>
+                            <span class="block text-muted-color font-medium mb-4">已駁回的課程數量</span>
                             <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ rejectedCourseQty }}</div>
                         </div>
                         <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                            <i class="pi pi-dollar text-orange-500 !text-xl"></i>
+                            <i class="pi pi-thumbs-down text-orange-500 !text-xl"></i>
                         </div>
                     </div>
-                    <!-- <span class="text-primary font-medium">52 new </span> -->
-                    <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
+                    <span class="text-primary font-medium">{{ newRejectedCourseQty }} new </span>
+                    <div class="text-muted-color">自 {{ firstDayOfMonthText }} 以來</div>
                 </div>
             </div>
         </div>

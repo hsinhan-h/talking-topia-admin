@@ -14,31 +14,14 @@ export const CourseApprovalService = {
             });
     },
 
-    async getUnapprovedCourseQtyStartingFrom2024() {
+    async getCourseQtyByCoursesStatus(coursesStatus, startFromCurrentMonth) {
         return axios
-            .get(`${apiHost}/api/CourseManagementApi/GetUnapprovedCourseQtyStartingFrom2024`)
-            .then((response) => {
-                return response.data;
+            .get(`${apiHost}/api/CourseManagementApi/GetCourseQtyByCoursesStatus`, {
+                params: {
+                    coursesStatus: coursesStatus,
+                    startFromCurrentMonth: startFromCurrentMonth
+                }
             })
-            .catch((error) => {
-                console.error('Error fetching unapproved course quantity: ', error);
-            });
-    },
-
-    async getApprovedCourseQtyStartingFrom2024() {
-        return axios
-            .get(`${apiHost}/api/CourseManagementApi/GetApprovedCourseQtyStartingFrom2024`)
-            .then((response) => {
-                return response.data;
-            })
-            .catch((error) => {
-                console.error('Error fetching approved course quantity: ', error);
-            });
-    },
-
-    async getRejectedCourseQtyStartingFrom2024() {
-        return axios
-            .get(`${apiHost}/api/CourseManagementApi/GetRejectedCourseQtyStartingFrom2024`)
             .then((response) => {
                 return response.data;
             })
