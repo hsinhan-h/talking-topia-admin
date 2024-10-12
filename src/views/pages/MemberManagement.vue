@@ -3,7 +3,7 @@ import { ShipperService } from '@/service/ShipperService';
 import { onMounted, ref } from 'vue';
 import { MemberData } from '@/service/MemberManagementService';
 import { useToast } from 'primevue/usetoast';
-
+import ProgressBar from 'primevue/progressbar';
 
 
 
@@ -14,6 +14,7 @@ const submitted = ref(false);
 const toast = useToast();
 const phoneError = ref(false);
 const emailError = ref(false);
+
 
 //member相關
 const allmemberdata = ref([]);
@@ -161,8 +162,9 @@ function validateEmail() {
                         <i class="pi pi-eye-slash text-orange-500 !text-xl"></i>
                     </div>
                 </div>
-                <span class="text-primary font-medium">{{ allmemberDatacount.monthlyBlockAccessCount}} new </span>
-                <div class="text-muted-color">自{{ allmemberDatacount.currentMonth}}月以來</div>
+                <div>
+                    <ProgressBar :value="allmemberDatacount.rateblockandnormal" /><span>已停權比例</span>
+                </div>
             </div>
         </div>
     </div>
