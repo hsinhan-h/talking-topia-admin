@@ -1,18 +1,62 @@
 <script setup>
 import { CourseManagementService } from '@/service/CourseManagementService';
 import { useToast } from 'primevue/usetoast';
-import { onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 const disableCourseDialog = ref(false);
 const enableCourseDialog = ref(false);
+const editCourseDialog = ref(false);
 
 const courseManagementDataArray = ref([]);
-const selectedCourse = ref({});
-const categories = ref(['語言學習', '程式設計', '升學科目']);
-const selectedCategory = ref(null);
+const categoryOptions = ref([
+    { label: '語言學習', value: 1 },
+    { label: '程式設計', value: 2 },
+    { label: '升學科目', value: 3 }
+]);
+const subjectsMapping = {
+    1: [
+        { label: '英文', value: 1 },
+        { label: '日文', value: 2 },
+        { label: '中文', value: 3 },
+        { label: '德文', value: 4 },
+        { label: '法文', value: 5 },
+        { label: '西班牙文', value: 6 }
+    ],
+    2: [
+        { label: 'HTML/CSS', value: 7 },
+        { label: 'JavaScript', value: 8 },
+        { label: 'C#', value: 9 },
+        { label: 'SQL', value: 10 },
+        { label: 'Python', value: 11 },
+        { label: 'Java', value: 12 }
+    ],
+    3: [
+        { label: '數學', value: 13 },
+        { label: '物理', value: 14 },
+        { label: '化學', value: 15 },
+        { label: '歷史', value: 16 },
+        { label: '地理', value: 17 },
+        { label: '生物', value: 18 }
+    ]
+};
+const selectedCourse = ref({ courseCategory: null, courseSubject: null });
+
+//錯誤訊息
+const titleErrorMessage = ref(null);
+const subTitleErrorMessage = ref(null);
+const priceErrorMessage = ref({
+    twentyFiveMinUnitPrice: '',
+    fiftyMinUnitPrice: ''
+});
+const videoUrlErrorMessage = ref(null);
+const descriptionErrorMessage = ref(null);
 
 const isLoading = ref(true);
 const toast = useToast();
+
+const subjectOptions = computed(() => {
+    return subjectsMapping[selectedCourse.value.courseCategory] || [];
+});
 
 onMounted(async () => {
     try {
@@ -26,6 +70,40 @@ onMounted(async () => {
         isLoading.value = false;
     }
 });
+
+function showEditCourseDialog(course) {
+    selectedCourse.value = { ...course };
+    console.log(selectedCourse.value);
+
+    //清空錯誤訊息
+    titleErrorMessage.value = '';
+    subTitleErrorMessage.value = '';
+    priceErrorMessage.value.twentyFiveMinUnitPrice = '';
+    priceErrorMessage.value.fiftyMinUnitPrice = '';
+    videoUrlErrorMessage.value = '';
+    descriptionErrorMessage.value = '';
+
+    const category = categoryOptions.value.find((opt) => opt.label === course.courseCategory);
+    if (course.courseCategory) {
+        selectedCourse.value.courseCategory = category.value;
+    }
+    const subject = subjectOptions.value.find((opt) => opt.label === course.courseSubject);
+    if (course.courseSubject) {
+        selectedCourse.value.courseSubject = subject.value;
+    }
+    editCourseDialog.value = true;
+}
+
+async function saveUpdatedCourseData() {
+    if (validateFormInput()) {
+        await CourseManagementService.updateCourseData(selectedCourse.value);
+        toast.add({ severity: 'success', summary: '編輯成功', detail: '成功編輯課程資訊！', life: 3000 });
+        editCourseDialog.value = false;
+        await updateCourseManagementList();
+    } else {
+        toast.add({ severity: 'error', summary: '編輯失敗', detail: '請修正表單中的錯誤！', life: 3000 });
+    }
+}
 
 function showDisableCourseDialog(course) {
     selectedCourse.value = course;
@@ -82,6 +160,61 @@ function getPublishStatusSeverity(publishStatus, isUnderReview) {
     }
     return 'secondary';
 }
+
+function validateFormInput() {
+    let isValid = true;
+
+    //驗證標題/副標題資訊
+    if (!selectedCourse.value.courseTitle.trim()) {
+        titleErrorMessage.value = '課程標題不得為空';
+        isValid = false;
+    } else {
+        titleErrorMessage.value = '';
+    }
+    if (!selectedCourse.value.courseSubTitle.trim()) {
+        subTitleErrorMessage.value = '課程副標題不得為空';
+        isValid = false;
+    } else {
+        subTitleErrorMessage.value = '';
+    }
+
+    //驗證價格資訊
+    if (!selectedCourse.value.twentyFiveMinUnitPrice || !Number.isInteger(Number(selectedCourse.value.twentyFiveMinUnitPrice))) {
+        priceErrorMessage.value.twentyFiveMinUnitPrice = '請輸入有效的25分鐘價格';
+        isValid = false;
+    } else {
+        priceErrorMessage.value.twentyFiveMinUnitPrice = '';
+    }
+
+    if (!selectedCourse.value.fiftyMinUnitPrice || !Number.isInteger(Number(selectedCourse.value.fiftyMinUnitPrice))) {
+        priceErrorMessage.value.fiftyMinUnitPrice = '請輸入有效的50分鐘價格';
+        isValid = false;
+    } else {
+        priceErrorMessage.value.fiftyMinUnitPrice = '';
+    }
+
+    //驗證影片url
+    const youtubeEmbedRegex = /^https:\/\/www\.youtube\.com\/embed\/[a-zA-Z0-9_-]+$/;
+    if (!youtubeEmbedRegex.test(selectedCourse.value.videoUrl)) {
+        videoUrlErrorMessage.value = '請輸入有效的Youtube embed影片連結';
+        isValid = false;
+    } else {
+        videoUrlErrorMessage.value = '';
+    }
+
+    //驗證課程介紹
+    if (!selectedCourse.value.description.trim()) {
+        descriptionErrorMessage.value = '課程介紹不得為空';
+        isValid = false;
+    } else if (selectedCourse.value.description.length < 50) {
+        descriptionErrorMessage.value = '課程介紹不得少於50個字';
+        isValid = false;
+    } else {
+        descriptionErrorMessage.value = '';
+    }
+
+    return isValid;
+}
 </script>
 
 <template>
@@ -136,14 +269,6 @@ function getPublishStatusSeverity(publishStatus, isUnderReview) {
                 <Column field="tutorName" header="教師姓名"></Column>
                 <Column field="courseCategory" header="類別" :filter="true" :filterElement="categoryFilter"></Column>
                 <Column field="courseSubject" header="科目"></Column>
-                <!-- <Column field="twentyFiveMinUnitPrice" header="25分鐘($)"></Column>
-            <Column field="fiftyMinUnitPrice" header="50分鐘($)"></Column> -->
-                <!-- <Column field="courseImages" header="課程圖片">
-                <template #body="slotProps">
-                    <img v-if="slotProps.data.courseImages && slotProps.data.courseImages.length > 0" :src="slotProps.data.courseImages[0]" alt="課程圖片" style="width: 120px; height: 100px; object-fit: contain; cursor: pointer" />
-                    <span v-else style="font-size: 12px; color: #aaa">未上傳圖片</span>
-                </template>
-            </Column> -->
                 <Column field="publishStatus" header="上架狀態" sortable>
                     <template #body="slotProps">
                         <Tag :value="getPublishStatusLabel(slotProps.data.publishStatus, slotProps.data.isUnderReview)" :severity="getPublishStatusSeverity(slotProps.data.publishStatus, slotProps.data.isUnderReview)" />
@@ -154,9 +279,9 @@ function getPublishStatusSeverity(publishStatus, isUnderReview) {
                         <span v-html="slotProps.data.publishDate.substring(0, 19).replace('T', '<br />')"></span>
                     </template>
                 </Column>
-                <Column field="courseInfo" header="課程資訊" :body="actionTemplate">
-                    <template>
-                        <Button icon="pi pi-user-edit" outlined rounded class="mr-2" @click="editCourseData(slotProps.data)" tooltip="Edit Course" />
+                <Column header="課程資訊" :body="actionTemplate">
+                    <template #body="slotProps">
+                        <Button icon="pi pi-pencil" label="編輯資訊" severity="secondary" outlined @click="showEditCourseDialog(slotProps.data)" :disabled="slotProps.data.isUnderReview === true" />
                     </template>
                 </Column>
                 <Column field="courseDisable" header="下架/重新上架" :body="actionTemplate">
@@ -193,9 +318,63 @@ function getPublishStatusSeverity(publishStatus, isUnderReview) {
                     <Button label="Yes" icon="pi pi-check" @click="switchCoursePublishingStatus(selectedCourse.courseId, true)" />
                 </template>
             </Dialog>
+
+            <Dialog v-model:visible="editCourseDialog" :style="{ width: '650px' }" header="編輯課程資料" :modal="true">
+                <div class="flex flex-col gap-6">
+                    <div>
+                        <label class="font-bold mb-3">課程ID</label>
+                        <InputText v-model="selectedCourse.courseId" disabled fluid />
+                    </div>
+                    <div>
+                        <label class="font-bold mb-3">課程標題</label>
+                        <InputText v-model="selectedCourse.courseTitle" fluid />
+                        <Message v-if="titleErrorMessage" severity="error"><i class="pi pi-times-circle"></i> {{ titleErrorMessage }}</Message>
+                    </div>
+                    <div>
+                        <label class="font-bold mb-3">課程副標題</label>
+                        <InputText v-model="selectedCourse.courseSubTitle" fluid />
+                        <Message v-if="subTitleErrorMessage" severity="error"><i class="pi pi-times-circle"></i> {{ subTitleErrorMessage }}</Message>
+                    </div>
+                    <div class="flex gap-5">
+                        <div class="flex-1">
+                            <label class="block font-bold mb-3">類別</label>
+                            <Dropdown v-model="selectedCourse.courseCategory" :options="categoryOptions" optionLabel="label" optionValue="value" fluid />
+                        </div>
+                        <div class="flex-1">
+                            <label class="block font-bold mb-3">科目</label>
+                            <Dropdown v-model="selectedCourse.courseSubject" :options="subjectOptions" optionLabel="label" optionValue="value" fluid />
+                        </div>
+                    </div>
+                    <div class="flex gap-5">
+                        <div class="flex-1">
+                            <label class="block font-bold mb-3">25分鐘價格</label>
+                            <InputText v-model="selectedCourse.twentyFiveMinUnitPrice" fluid />
+                            <Message v-if="priceErrorMessage.twentyFiveMinUnitPrice" severity="error"><i class="pi pi-times-circle"></i> {{ priceErrorMessage.twentyFiveMinUnitPrice }}</Message>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block font-bold mb-3">50分鐘價格</label>
+                            <InputText v-model="selectedCourse.fiftyMinUnitPrice" fluid />
+                            <Message v-if="priceErrorMessage.fiftyMinUnitPrice" severity="error"><i class="pi pi-times-circle"></i> {{ priceErrorMessage.fiftyMinUnitPrice }}</Message>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="font-bold mb-3">課程影片連結</label>
+                        <InputText v-model="selectedCourse.videoUrl" fluid />
+                        <Message v-if="videoUrlErrorMessage" severity="error"><i class="pi pi-times-circle"></i> {{ videoUrlErrorMessage }}</Message>
+                    </div>
+                    <div>
+                        <label class="font-bold mb-3">課程介紹</label>
+                        <Textarea v-model="selectedCourse.description" rows="6" fluid />
+                        <Message v-if="descriptionErrorMessage" severity="error"><i class="pi pi-times-circle"></i> {{ descriptionErrorMessage }}</Message>
+                    </div>
+                </div>
+                <template #footer>
+                    <Button label="Cancel" icon="pi pi-times" text @click="editCourseDialog = false" />
+                    <Button label="Save" icon="pi pi-check" @click="saveUpdatedCourseData()" />
+                </template>
+            </Dialog>
         </div>
     </div>
-    <!-- <Paginator :rows="6" :totalRecords="120" :rowsPerPageOptions="[6, 12, 18]"></Paginator> -->
 </template>
 
 <style scoped>

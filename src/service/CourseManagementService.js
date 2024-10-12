@@ -15,9 +15,18 @@ export const CourseManagementService = {
     },
 
     async enableCourse(courseId, courseEnable) {
-        console.log('Sending request with:', { courseId, courseEnable });
         return axios
             .put(`${apiHost}/api/CourseManagementApi/UpdatePublishingStatus`, { courseId: courseId, isEnabled: courseEnable })
+            .then((response) => response.data)
+            .catch((error) => {
+                console.error('Error approving course: ', error);
+            });
+    },
+
+    async updateCourseData(courseData) {
+        console.log(courseData);
+        return axios
+            .put(`${apiHost}/api/CourseManagementApi/UpdateCourseInfo`, courseData)
             .then((response) => response.data)
             .catch((error) => {
                 console.error('Error approving course: ', error);
