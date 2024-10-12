@@ -14,6 +14,37 @@ export const CourseManagementService = {
             });
     },
 
+    async getCourseQty(startFromCurrentMonth) {
+        return axios
+            .get(`${apiHost}/api/CourseManagementApi/GetCourseQty`, {
+                params: {
+                    startFromCurrentMonth: startFromCurrentMonth
+                }
+            })
+            .then((response) => {
+                return response.data;
+            })
+            .catch((error) => {
+                console.error('Error fetching course quantity: ', error);
+            });
+    },
+
+    async getCourseQtyByPublishingStatus(isPublished, startFromCurrentMonth) {
+        return axios
+            .get(`${apiHost}/api/CourseManagementApi/GetCourseQtyByPublishingStatus`, {
+                params: {
+                    isPublished: isPublished,
+                    startFromCurrentMonth: startFromCurrentMonth
+                }
+            })
+            .then((response) => {
+                return response.data;
+            })
+            .catch((error) => {
+                console.error('Error fetching course quantity: ', error);
+            });
+    },
+
     async enableCourse(courseId, courseEnable) {
         return axios
             .put(`${apiHost}/api/CourseManagementApi/UpdatePublishingStatus`, { courseId: courseId, isEnabled: courseEnable })

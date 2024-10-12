@@ -132,11 +132,11 @@ async function approveCoursePublishing(courseId, courseApprove) {
                 <div class="card mb-0">
                     <div class="flex justify-between mb-4">
                         <div>
-                            <span class="block text-muted-color font-medium mb-4">已通過的課程數量</span>
+                            <span class="block text-muted-color font-medium mb-4">已通過課程數量</span>
                             <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ approvedCourseQty }}</div>
                         </div>
                         <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                            <i class="pi pi-verified text-green-500 !text-xl"></i>
+                            <i class="pi pi-verified text-orange-500 !text-xl"></i>
                         </div>
                     </div>
                     <span class="text-primary font-medium">{{ newApprovedCourseQty }} new </span>
@@ -147,11 +147,11 @@ async function approveCoursePublishing(courseId, courseApprove) {
                 <div class="card mb-0">
                     <div class="flex justify-between mb-4">
                         <div>
-                            <span class="block text-muted-color font-medium mb-4">已駁回的課程數量</span>
+                            <span class="block text-muted-color font-medium mb-4">已駁回課程數量</span>
                             <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ rejectedCourseQty }}</div>
                         </div>
-                        <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                            <i class="pi pi-thumbs-down text-orange-500 !text-xl"></i>
+                        <div class="flex items-center justify-center bg-green-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                            <i class="pi pi-thumbs-down text-green-500 !text-xl"></i>
                         </div>
                     </div>
                     <span class="text-primary font-medium">{{ newRejectedCourseQty }} new </span>

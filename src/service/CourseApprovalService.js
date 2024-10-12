@@ -26,7 +26,7 @@ export const CourseApprovalService = {
                 return response.data;
             })
             .catch((error) => {
-                console.error('Error fetching unapproved course quantity: ', error);
+                console.error('Error fetching course quantity: ', error);
             });
     },
 

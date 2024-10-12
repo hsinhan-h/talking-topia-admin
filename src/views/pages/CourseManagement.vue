@@ -51,6 +51,14 @@ const priceErrorMessage = ref({
 const videoUrlErrorMessage = ref(null);
 const descriptionErrorMessage = ref(null);
 
+const firstDayOfMonthText = ref(null);
+const courseQty = ref(0);
+const newCourseQty = ref(0);
+const publishedCourseQty = ref(0);
+const newPublishedCourseQty = ref(0);
+const unPublishedCourseQty = ref(0);
+const newUnPublishedCourseQty = ref(0);
+
 const isLoading = ref(true);
 const toast = useToast();
 
@@ -58,18 +66,43 @@ const subjectOptions = computed(() => {
     return subjectsMapping[selectedCourse.value.courseCategory] || [];
 });
 
-onMounted(async () => {
-    try {
-        const [courseManagementData] = await Promise.all([await CourseManagementService.getCourseManagementData()]);
+const publishedPercentage = computed(() => {
+    return ((publishedCourseQty.value / courseQty.value) * 100).toFixed(2);
+});
 
+onMounted(async () => {
+    const currentDate = new Date();
+    const firstDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+    firstDayOfMonthText.value = `${firstDayOfMonth.getFullYear()}/${(firstDayOfMonth.getMonth() + 1).toString().padStart(2, '0')}/${firstDayOfMonth.getDate().toString().padStart(2, '0')} 00:00`;
+
+    loadCourseData();
+});
+
+async function loadCourseData() {
+    try {
+        const [courseManagementData, courseQtyData, newCourseQtyData, publishedCourseQtyData, newPublishedCourseQtyData, unPublishedCourseQtyData, newUnPublishedCourseQtyData] = await Promise.all([
+            await CourseManagementService.getCourseManagementData(),
+            CourseManagementService.getCourseQty(false),
+            CourseManagementService.getCourseQty(true),
+            CourseManagementService.getCourseQtyByPublishingStatus(true, false),
+            CourseManagementService.getCourseQtyByPublishingStatus(true, true),
+            CourseManagementService.getCourseQtyByPublishingStatus(false, true),
+            CourseManagementService.getCourseQtyByPublishingStatus(false, true)
+        ]);
         courseManagementDataArray.value = courseManagementData;
+        courseQty.value = courseQtyData;
+        newCourseQty.value = newCourseQtyData;
+        publishedCourseQty.value = publishedCourseQtyData;
+        newPublishedCourseQty.value = newPublishedCourseQtyData;
+        unPublishedCourseQty.value = unPublishedCourseQtyData;
+        newUnPublishedCourseQty.value = newUnPublishedCourseQtyData;
         console.log('課程管理列表:', courseManagementData);
     } catch (error) {
         console.error('加載數據失敗', error);
     } finally {
         isLoading.value = false;
     }
-});
+}
 
 function showEditCourseDialog(course) {
     selectedCourse.value = { ...course };
@@ -125,7 +158,7 @@ async function switchCoursePublishingStatus(courseId, courseEnable) {
             toast.add({ severity: 'info', summary: '成功', detail: '已下架此課程！', life: 3000 });
             disableCourseDialog.value = false;
         }
-        await updateCourseManagementList();
+        await loadCourseData();
     } catch (error) {
         console.error('上架/下架課程失敗', error);
     }
@@ -226,32 +259,61 @@ function validateFormInput() {
 
     <div v-else>
         <div class="grid grid-cols-12 gap-8">
-            <div class="col-span-12 lg:col-span-6 xl:col-span-6">
-                <div class="card mb-0">
-                    <div class="flex justify-between mb-4">
-                        <div>
-                            <span class="block text-muted-color font-medium mb-4">當前總課程數量</span>
-                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">152</div>
+            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+                <div class="card mb-0 flex justify-between">
+                    <div>
+                        <div class="flex justify-between mb-4">
+                            <div>
+                                <span class="block text-muted-color font-medium mb-4">當前總課程數量</span>
+                                <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ courseQty }}</div>
+                            </div>
                         </div>
-                        <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                            <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
-                        </div>
+                        <span class="text-primary font-medium">{{ newCourseQty }} new </span>
+                        <div class="text-muted-color">自 {{ firstDayOfMonthText }} 以來</div>
                     </div>
-                    <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
+                    <div>
+                        <span class="block text-muted-color font-medium text-center">已上架比例</span>
+                        <Knob v-model="publishedPercentage" valueTemplate="{value}%" />
+                    </div>
+                    <!-- <div class="flex items-center justify-center bg-blue-100 dark:bg-blue-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                        <i class="pi pi-shopping-cart text-blue-500 !text-xl"></i>
+                    </div> -->
                 </div>
             </div>
-            <div class="col-span-12 lg:col-span-6 xl:col-span-6">
+            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
+                <div class="card mb-0">
+                    <div>
+                        <div class="flex justify-between mb-4">
+                            <div>
+                                <span class="block text-muted-color font-medium mb-4">已上架課程數量</span>
+                                <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ publishedCourseQty }}</div>
+                            </div>
+                            <div>
+                                <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                                    <i class="pi pi-verified text-orange-500 !text-xl"></i>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="text-primary font-medium">{{ newPublishedCourseQty }} new </span>
+                        <div class="text-muted-color">自 {{ firstDayOfMonthText }} 以來</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-span-12 lg:col-span-6 xl:col-span-4">
                 <div class="card mb-0">
                     <div class="flex justify-between mb-4">
                         <div>
-                            <span class="block text-muted-color font-medium mb-4">歷史已上架數量</span>
-                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">300</div>
+                            <span class="block text-muted-color font-medium mb-4">已下架課程數量</span>
+                            <div class="text-surface-900 dark:text-surface-0 font-medium text-xl">{{ unPublishedCourseQty }}</div>
                         </div>
-                        <div class="flex items-center justify-center bg-orange-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
-                            <i class="pi pi-dollar text-orange-500 !text-xl"></i>
+                        <div>
+                            <div class="flex items-center justify-center bg-green-100 dark:bg-orange-400/10 rounded-border" style="width: 2.5rem; height: 2.5rem">
+                                <i class="pi pi-ban text-green-500 !text-xl"></i>
+                            </div>
                         </div>
                     </div>
-                    <span class="text-muted-color">自 2024/01/01 00:00 以來</span>
+                    <span class="text-primary font-medium">{{ newUnPublishedCourseQty }} new </span>
+                    <div class="text-muted-color">自 {{ firstDayOfMonthText }} 以來</div>
                 </div>
             </div>
         </div>
