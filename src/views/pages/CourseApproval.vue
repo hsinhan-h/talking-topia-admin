@@ -1,4 +1,5 @@
 <script setup>
+import '@/assets/styles/courseApproval.scss';
 import { CourseApprovalService } from '@/service/CourseApprovalService';
 import { useToast } from 'primevue/usetoast';
 import { onMounted, ref } from 'vue';
@@ -260,30 +261,3 @@ async function approveCoursePublishing(courseId, courseApprove) {
         </Dialog>
     </div>
 </template>
-
-<style scoped>
-.course-images-dialog {
-    display: flex;
-    flex-wrap: wrap;
-    max-height: 600px;
-    gap: 20px;
-}
-
-.custom-secondary-button {
-    background-color: #02cab9;
-    border-color: #02cab9;
-    color: #fff;
-}
-
-.custom-secondary-button:hover {
-    background-color: #02ebd6;
-    border-color: #02ebd6;
-}
-
-.empty-approval-list-text {
-    color: #02cab9;
-    font-size: 32px;
-    height: 40vh;
-    margin-top: 12px;
-}
-</style>

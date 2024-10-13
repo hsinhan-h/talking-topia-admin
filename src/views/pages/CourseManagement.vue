@@ -1,4 +1,5 @@
 <script setup>
+import '@/assets/styles/courseManagement.scss';
 import { CourseManagementService } from '@/service/CourseManagementService';
 import { useToast } from 'primevue/usetoast';
 import { computed, onMounted, ref } from 'vue';
@@ -108,13 +109,7 @@ function showEditCourseDialog(course) {
     selectedCourse.value = { ...course };
     console.log(selectedCourse.value);
 
-    //清空錯誤訊息
-    titleErrorMessage.value = '';
-    subTitleErrorMessage.value = '';
-    priceErrorMessage.value.twentyFiveMinUnitPrice = '';
-    priceErrorMessage.value.fiftyMinUnitPrice = '';
-    videoUrlErrorMessage.value = '';
-    descriptionErrorMessage.value = '';
+    clearErrorMessages();
 
     const category = categoryOptions.value.find((opt) => opt.label === course.courseCategory);
     if (course.courseCategory) {
@@ -136,6 +131,15 @@ async function saveUpdatedCourseData() {
     } else {
         toast.add({ severity: 'error', summary: '編輯失敗', detail: '請修正表單中的錯誤！', life: 3000 });
     }
+}
+
+function clearErrorMessages() {
+    titleErrorMessage.value = '';
+    subTitleErrorMessage.value = '';
+    priceErrorMessage.value.twentyFiveMinUnitPrice = '';
+    priceErrorMessage.value.fiftyMinUnitPrice = '';
+    videoUrlErrorMessage.value = '';
+    descriptionErrorMessage.value = '';
 }
 
 function showDisableCourseDialog(course) {
@@ -438,38 +442,3 @@ function validateFormInput() {
         </div>
     </div>
 </template>
-
-<style scoped>
-.course-images-dialog {
-    display: flex;
-    flex-wrap: wrap;
-    max-height: 600px;
-    gap: 20px;
-}
-
-.custom-secondary-button {
-    background-color: #02cab9;
-    border-color: #02cab9;
-    color: #fff;
-}
-
-.custom-secondary-button:hover {
-    background-color: #02ebd6;
-    border-color: #02ebd6;
-}
-
-.empty-approval-list-text {
-    color: #02cab9;
-    font-size: 32px;
-    height: 40vh;
-    margin-top: 12px;
-}
-
-.text-truncate {
-    overflow: hidden;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    margin-top: 6px;
-}
-</style>
