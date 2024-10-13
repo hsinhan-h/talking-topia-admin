@@ -86,7 +86,7 @@ async function loadCourseData() {
             CourseManagementService.getCourseQty(true),
             CourseManagementService.getCourseQtyByPublishingStatus(true, false),
             CourseManagementService.getCourseQtyByPublishingStatus(true, true),
-            CourseManagementService.getCourseQtyByPublishingStatus(false, true),
+            CourseManagementService.getCourseQtyByPublishingStatus(false, false),
             CourseManagementService.getCourseQtyByPublishingStatus(false, true)
         ]);
         courseManagementDataArray.value = courseManagementData;
