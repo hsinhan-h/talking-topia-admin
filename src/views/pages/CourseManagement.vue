@@ -211,23 +211,21 @@ async function onAdvancedUpload(event) {
     const formData = new FormData();
 
     for (let file of event.files) {
-        const imageUrl = URL.createObjectURL(file);
-        tempCourseImages.value.push(imageUrl);
+        formData.append('images', file);
     }
-    toast.add({ severity: 'success', summary: '上傳成功', detail: '課程圖片已上傳', life: 3000 });
 
-    // try {
-    //     const response = await CourseManagementService.uploadCourseImages(selectedCourse.value.courseId, formData);
-    //     if (response.status === 200) {
-    //         tempCourseImages.value = tempCourseImages.value.concat(response.data);
-    //         toast.add({ severity: 'success', summary: '上傳成功', detail: '課程圖片已成功上傳', life: 3000 });
-    //     } else {
-    //         throw new Error('Upload failed');
-    //     }
-    // } catch (error) {
-    //     console.error('File upload failed', error);
-    //     toast.add({ severity: 'error', summary: '上傳失敗', detail: '圖片上傳失敗，請稍後再試', life: 3000 });
-    // }
+    try {
+        const response = await CourseManagementService.uploadCourseImages(selectedCourse.value.courseId, formData);
+        if (response) {
+            tempCourseImages.value = tempCourseImages.value.concat(response);
+            toast.add({ severity: 'success', summary: '上傳成功', detail: '課程圖片已成功上傳', life: 3000 });
+        } else {
+            throw new Error('Upload failed');
+        }
+    } catch (error) {
+        console.error('File upload failed', error);
+        toast.add({ severity: 'error', summary: '上傳失敗', detail: '圖片上傳失敗，請稍後再試', life: 3000 });
+    }
 }
 
 function validateFormInput() {
@@ -463,7 +461,7 @@ function validateFormInput() {
                                 <Button icon="pi pi-trash" class="p-button-secondary p-button-sm" @click="deleteImage(index)" />
                             </div>
                         </div>
-                        <FileUpload name="images" :url="`${apiHost}/api/CloudinaryApi/UploadImages?courseId=${selectedCourse.courseId}`" @upload="onAdvancedUpload" :multiple="true" accept="image/*" :maxFileSize="1000000">
+                        <FileUpload name="images" :custom-upload="true" :auto="false" :multiple="true" accept="image/*" :maxFileSize="1000000" @select="onAdvancedUpload" :uploadHandler="onAdvancedUpload">
                             <template #empty>
                                 <span>Drag and drop files to here to upload.</span>
                             </template>
