@@ -7,6 +7,7 @@ import { computed, onMounted, ref } from 'vue';
 const disableCourseDialog = ref(false);
 const enableCourseDialog = ref(false);
 const editCourseDialog = ref(false);
+const apiHost = import.meta.env.VITE_API_HOST;
 
 const courseManagementDataArray = ref([]);
 const categoryOptions = ref([
@@ -41,6 +42,7 @@ const subjectsMapping = {
     ]
 };
 const selectedCourse = ref({ courseCategory: null, courseSubject: null });
+const tempCourseImages = ref([]);
 
 //錯誤訊息
 const titleErrorMessage = ref(null);
@@ -109,6 +111,7 @@ function showEditCourseDialog(course) {
     selectedCourse.value = { ...course };
     console.log(selectedCourse.value);
 
+    tempCourseImages.value = [...selectedCourse.value.courseImages];
     clearErrorMessages();
 
     const category = categoryOptions.value.find((opt) => opt.label === course.courseCategory);
@@ -124,6 +127,7 @@ function showEditCourseDialog(course) {
 
 async function saveUpdatedCourseData() {
     if (validateFormInput()) {
+        selectedCourse.value.courseImages = [...tempCourseImages.value];
         await CourseManagementService.updateCourseData(selectedCourse.value);
         toast.add({ severity: 'success', summary: '編輯成功', detail: '成功編輯課程資訊！', life: 3000 });
         editCourseDialog.value = false;
@@ -196,6 +200,34 @@ function getPublishStatusSeverity(publishStatus, isUnderReview) {
         return 'success';
     }
     return 'secondary';
+}
+
+function deleteImage(index) {
+    // selectedCourse.value.courseImages.splice(index, 1);
+    tempCourseImages.value.splice(index, 1);
+}
+
+async function onAdvancedUpload(event) {
+    const formData = new FormData();
+
+    for (let file of event.files) {
+        const imageUrl = URL.createObjectURL(file);
+        tempCourseImages.value.push(imageUrl);
+    }
+    toast.add({ severity: 'success', summary: '上傳成功', detail: '課程圖片已上傳', life: 3000 });
+
+    // try {
+    //     const response = await CourseManagementService.uploadCourseImages(selectedCourse.value.courseId, formData);
+    //     if (response.status === 200) {
+    //         tempCourseImages.value = tempCourseImages.value.concat(response.data);
+    //         toast.add({ severity: 'success', summary: '上傳成功', detail: '課程圖片已成功上傳', life: 3000 });
+    //     } else {
+    //         throw new Error('Upload failed');
+    //     }
+    // } catch (error) {
+    //     console.error('File upload failed', error);
+    //     toast.add({ severity: 'error', summary: '上傳失敗', detail: '圖片上傳失敗，請稍後再試', life: 3000 });
+    // }
 }
 
 function validateFormInput() {
@@ -422,6 +454,20 @@ function validateFormInput() {
                             <InputText v-model="selectedCourse.fiftyMinUnitPrice" fluid />
                             <Message v-if="priceErrorMessage.fiftyMinUnitPrice" severity="error"><i class="pi pi-times-circle"></i> {{ priceErrorMessage.fiftyMinUnitPrice }}</Message>
                         </div>
+                    </div>
+                    <div>
+                        <label class="font-bold mb-3">課程圖片</label>
+                        <div v-if="selectedCourse.courseImages.length" class="course-images-dialog mb-4 flex">
+                            <div v-for="(image, index) in tempCourseImages" :key="index" class="course-image">
+                                <img :src="image" alt="課程圖片" class="rounded" style="width: 120px; height: 100px; object-fit: cover" />
+                                <Button icon="pi pi-trash" class="p-button-secondary p-button-sm" @click="deleteImage(index)" />
+                            </div>
+                        </div>
+                        <FileUpload name="images" :url="`${apiHost}/api/CloudinaryApi/UploadImages?courseId=${selectedCourse.courseId}`" @upload="onAdvancedUpload" :multiple="true" accept="image/*" :maxFileSize="1000000">
+                            <template #empty>
+                                <span>Drag and drop files to here to upload.</span>
+                            </template>
+                        </FileUpload>
                     </div>
                     <div>
                         <label class="font-bold mb-3">課程影片連結</label>

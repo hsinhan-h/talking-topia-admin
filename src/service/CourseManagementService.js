@@ -55,12 +55,20 @@ export const CourseManagementService = {
     },
 
     async updateCourseData(courseData) {
-        console.log(courseData);
         return axios
             .put(`${apiHost}/api/CourseManagementApi/UpdateCourseInfo`, courseData)
             .then((response) => response.data)
             .catch((error) => {
                 console.error('Error approving course: ', error);
+            });
+    },
+
+    async uploadCourseImages(courseId, formData) {
+        return axios
+            .post(`${apiHost}/api/CloudinaryApi/UploadImages?courseId=${courseId}`, formData)
+            .then((response) => response.data)
+            .catch((error) => {
+                console.error('Error uploading course images: ', error);
             });
     }
 };
