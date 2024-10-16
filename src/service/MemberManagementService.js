@@ -1,5 +1,5 @@
 
-import { getAllMemberDataList, updateMemberData, getAllTutorData, approveTutorStatus, rejectTutorStatus, tutorInformationStatus, lockingStatus} from '@/api/index';
+import { getAllMemberDataList, updateMemberData, getAllTutorData, approveTutorStatus, rejectTutorStatus, tutorInformationStatus, lockingStatus, getmemberDataCount} from '@/api/index';
 
 export const MemberData = {
     getAllMemberDataList() {
@@ -83,6 +83,19 @@ export const MemberData = {
     updateLockingStatus(memberId) {
         return new Promise((resolve, reject) => {
             lockingStatus(memberId)
+                .then((data) => {
+                    console.log('教師資料:', data); 
+                    resolve(data); 
+                })
+                .catch((error) => {
+                    console.error('獲取教師資料失敗:', error); 
+                    reject(error); 
+                });
+        });
+    },
+    getmemberDataCountStatus() {
+        return new Promise((resolve, reject) => {
+            getmemberDataCount()
                 .then((data) => {
                     console.log('教師資料:', data); 
                     resolve(data); 

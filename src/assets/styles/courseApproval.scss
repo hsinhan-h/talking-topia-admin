@@ -1,0 +1,24 @@
+.custom-secondary-button {
+    background-color: #02cab9 !important;
+    border-color: #02cab9 !important;
+    color: #fff !important;
+}
+
+.custom-secondary-button:hover {
+    background-color: #01b7a7 !important;
+    border-color: #01b7a7 !important;
+}
+
+.course-images-dialog {
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 600px;
+    gap: 20px;
+}
+
+.empty-approval-list-text {
+    color: #02cab9;
+    font-size: 32px;
+    height: 40vh;
+    margin-top: 12px;
+}

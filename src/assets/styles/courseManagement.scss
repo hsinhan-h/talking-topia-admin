@@ -1,0 +1,18 @@
+.custom-secondary-button {
+    background-color: #02cab9 !important;
+    border-color: #02cab9 !important;
+    color: #fff !important;
+}
+
+.custom-secondary-button:hover {
+    background-color: #01b7a7 !important;
+    border-color: #01b7a7 !important;
+}
+
+.text-truncate {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    margin-top: 6px;
+}

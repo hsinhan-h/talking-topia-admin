@@ -18,7 +18,8 @@ const api = {
     approveTutor:'/api/MemberManagermentApi/ApproveTutorData',
     rejectTutor:'/api/MemberManagermentApi/RejectTutorData',
     tutorInformationUrl:'/api/MemberManagermentApi/TutorDataInformation',
-    lockingStatusUrl:'/api/MemberManagermentApi/UpdateMemberAccoutType'
+    lockingStatusUrl:'/api/MemberManagermentApi/UpdateMemberAccoutType',
+    memberDataCountUrl:'/api/MemberManagermentApi/MemberDataCountInformation'
 };
 
 export function getAllShippers() {
@@ -99,4 +100,6 @@ export function tutorInformationStatus() {
 export function lockingStatus(memberId) {
     return ApiRequest.httpPut(`${api.lockingStatusUrl}?memberId=${memberId}`);
 }
-
+export function getmemberDataCount() {
+    return ApiRequest.httpGet(api.memberDataCountUrl);
+}
