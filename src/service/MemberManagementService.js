@@ -1,5 +1,5 @@
 
-import { getAllMemberDataList, updateMemberData, getAllTutorData, approveTutorStatus, rejectTutorStatus, tutorInformationStatus, lockingStatus, getmemberDataCount} from '@/api/index';
+import { getAllMemberDataList, updateMemberData, getAllTutorData, approveTutorStatus, rejectTutorStatus, tutorInformationStatus, lockingStatus, getmemberDataCount, getDbImgUrlInformaiton, updateImageUrl} from '@/api/index';
 
 export const MemberData = {
     getAllMemberDataList() {
@@ -105,5 +105,32 @@ export const MemberData = {
                     reject(error); 
                 });
         });
+    },
+    getDbImgUrlfuntion(memberId) {
+        return new Promise((resolve, reject) => {
+            getDbImgUrlInformaiton(memberId)
+                .then((data) => {
+                    console.log('教師資料:', data); 
+                    resolve(data); 
+                })
+                .catch((error) => {
+                    console.error('獲取教師資料失敗:', error); 
+                    reject(error); 
+                });
+        });
+    },
+    updateImageUrlInDB(memberId, imageUrls) {
+        return new Promise((resolve, reject) => {
+            updateImageUrl(memberId, imageUrls)
+                .then((data) => {
+                    console.log('教師資料:', data); 
+                    resolve(data); 
+                })
+                .catch((error) => {
+                    console.error('獲取教師資料失敗:', error); 
+                    reject(error); 
+                });
+        });
     }
+    
 };

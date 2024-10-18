@@ -11,7 +11,7 @@ const api = {
     getAllMemberDataList: '/api/MemberManagermentApi/GetMemberDataList',
     updateMemberDatas: '/api/MemberManagermentApi/UpdateMemberDataList',
     getAllTutorDataApi: '/api/MemberManagermentApi/GetTutorDataList',
-    updateMemberDatas: '/api/MemberManagermentApi/UpdateMemberDataList',
+    // updateMemberDatas: '/api/MemberManagermentApi/UpdateMemberDataList',
     getAllReviewData: '/api/Review/GetAllReviews',
     getDashboardDatas: '/api/Dashboard/GetDashboardData',
     deleteReview:'/api/Review/DeleteReview',
@@ -19,7 +19,9 @@ const api = {
     rejectTutor:'/api/MemberManagermentApi/RejectTutorData',
     tutorInformationUrl:'/api/MemberManagermentApi/TutorDataInformation',
     lockingStatusUrl:'/api/MemberManagermentApi/UpdateMemberAccoutType',
-    memberDataCountUrl:'/api/MemberManagermentApi/MemberDataCountInformation'
+    memberDataCountUrl:'/api/MemberManagermentApi/MemberDataCountInformation',
+    getImgUrl:'/api/MemberManagermentApi/GetDbImgUrlInformaiton',
+    updateImgUrlApi:'/api/MemberManagermentApi/UpdateImgbyAI'
 };
 
 export function getAllShippers() {
@@ -102,4 +104,14 @@ export function lockingStatus(memberId) {
 }
 export function getmemberDataCount() {
     return ApiRequest.httpGet(api.memberDataCountUrl);
+}
+export function getDbImgUrlInformaiton(memberId) {
+    return ApiRequest.httpGet(`${api.getImgUrl}?memberId=${memberId}`);
+}
+export function updateImageUrl(memberId, imageUrls) {
+    const request = {
+        memberId,
+        imageUrls,
+    };
+    return ApiRequest.httpPut(api.updateImgUrlApi, request);
 }
