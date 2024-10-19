@@ -8,6 +8,8 @@ const deleteReviewDialog = ref(false);
 const reviewList = ref(null);
 const review = ref({});
 const selectedReviews = ref();
+const deleteSelectedReviewsDialog = ref(false);
+
 
 
 onMounted(() => {
@@ -72,6 +74,10 @@ const weekReviewCount = computed(() => {
 const today = ref(getFirstDayOfDay());
 const firstDayOfWeek = ref(getFirstDayOfWeek());
 
+const selectedReviewIds = computed(() => {
+  if (!Array.isArray(selectedReviews.value)) return []; // 確保 selectedReviews 是一個陣列
+  return selectedReviews.value.map(review => review.reviewId);
+});
 
 
 function confirmedDeleteReview(data) {
@@ -79,7 +85,10 @@ function confirmedDeleteReview(data) {
     console.log(review.value);
     deleteReviewDialog.value = true;
 }
-
+function confirmedDeleteSelectedReviews() {
+    deleteSelectedReviewsDialog.value = true;
+    console.log(selectedReviewIds.value);
+}
 function deleteReview(){
     ReviewService.deleteReview(review.value.reviewId)
     .then((response)=>{
@@ -91,6 +100,20 @@ function deleteReview(){
             .then((result)=>{reviewList.value = result})
     })
     .catch((error) => {
+            console.error('刪除失敗', error);
+        });
+}
+
+function deleteSelectedReviews(){
+    ReviewService.deleteSelectedReviews(selectedReviewIds.value)
+        .then((response)=>{
+            console.log('要刪除這些評論囉');
+            deleteSelectedReviewsDialog.value=false;
+            selectedReviews.value = [];
+            ReviewService.getReviews()
+                .then((result)=>{reviewList.value = result})
+        })
+        .catch((error) => {
             console.error('刪除失敗', error);
         });
 }
@@ -147,7 +170,10 @@ function deleteReview(){
                     <Button icon="pi pi-trash" outlined rounded severity="danger" @click="confirmedDeleteReview(slotProps.data)" />
                 </template>
             </Column>
+            <Button icon="pi pi-trash" label="刪除選取項目" outlined rounded severity="danger" @click="confirmedDeleteSelectedReviews()" :disabled="!selectedReviews || !selectedReviews.length"  />
         </DataTable>
+
+        
 
         <Dialog v-model:visible="deleteReviewDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
             <div class="flex items-center gap-4">
@@ -159,6 +185,18 @@ function deleteReview(){
             <template #footer>
                 <Button label="No" icon="pi pi-times" text @click="deleteReviewDialog = false" />
                 <Button label="Yes" icon="pi pi-check" @click="deleteReview" />
+            </template>
+        </Dialog>
+        <Dialog v-model:visible="deleteSelectedReviewsDialog" :style="{ width: '450px' }" header="Confirm" :modal="true">
+            <div class="flex items-center gap-4">
+                <i class="pi pi-exclamation-triangle !text-3xl" />
+                <span 
+                    >確定刪除評論嗎?</span
+                >
+            </div>
+            <template #footer>
+                <Button label="取消" icon="pi pi-times" text @click="deleteSelectedReviewsDialog = false" />
+                <Button label="確認" icon="pi pi-check" @click="deleteSelectedReviews" />
             </template>
         </Dialog>
     </div>

@@ -1,4 +1,4 @@
-import { deleteReview, getAllReviewData } from '@/api/index';
+import { deleteReview, deleteSelectedReviews, getAllReviewData } from '@/api/index';
 
 
 export const ReviewService ={
@@ -24,6 +24,18 @@ export const ReviewService ={
                 .catch((err) => {
                     reject(err);
                 });
+        });
+    },
+    deleteSelectedReviews(reviewId){
+        return new Promise((resolve,reject)=>{
+            deleteSelectedReviews(reviewId)
+            .then((data)=>{
+                resolve(data.body);
+                console.log(data.body)
+            })
+            .catch((err)=>{
+                reject(err);
+            });
         });
     }
 };
