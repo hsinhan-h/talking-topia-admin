@@ -182,10 +182,10 @@ function validateEmail() {
             <Column field="phone" header="電話"></Column>
             <Column field="email" header="信箱"></Column>
             <Column field="cdate" header="註冊時間"></Column>
-            <Column field="isEmailConfirmed" header="是否停權"></Column>
+            <Column field="totalresult" header="是否停權"></Column>
             <Column :exportable="false" style="min-width: 12rem" header="編輯/停權">
                 <template #body="slotProps">
-                    <Button icon="pi pi-user-edit" outlined rounded class="mr-2" @click="editMemberData(slotProps.data)" :disabled="slotProps.data.isEmailConfirmed === '已停權'"  />
+                    <Button icon="pi pi-user-edit" outlined rounded class="mr-2" @click="editMemberData(slotProps.data)" :disabled="slotProps.data.totalresult === '已停權'"  />
                     <Button icon="pi pi-lock" outlined rounded severity="danger" @click="showMemberLockDialog(slotProps.data)"/>
                 </template>
             </Column>
