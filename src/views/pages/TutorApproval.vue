@@ -14,7 +14,7 @@ const aiApplicationDialog = ref(false);
 const selectedTutor = ref({});
 const rejectReason = ref('');
 const toast = useToast();
-const today = new Date().toLocaleString();
+const today = new Date().toISOString();//有可能出問題的地方
 const allTutorDataCount = ref({});
 const authStore = useAuthStore(); 
 
