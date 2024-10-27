@@ -5,7 +5,7 @@ const apiHost = import.meta.env.VITE_API_HOST;
 export const CourseApprovalService = {
     async getCourseApprovalList() {
         return axios
-            .get(`${apiHost}/api/CourseManagementApi/GetCourseApprovalList`)
+            .get(`${apiHost}/api/CourseManagementApiDapper/GetCourseApprovalList`)
             .then((response) => {
                 return response.data;
             })
@@ -16,7 +16,7 @@ export const CourseApprovalService = {
 
     async getCourseQtyByCoursesStatus(coursesStatus, startFromCurrentMonth) {
         return axios
-            .get(`${apiHost}/api/CourseManagementApi/GetCourseQtyByCoursesStatus`, {
+            .get(`${apiHost}/api/CourseManagementApiDapper/GetCourseQtyByCoursesStatus`, {
                 params: {
                     coursesStatus: coursesStatus,
                     startFromCurrentMonth: startFromCurrentMonth
@@ -32,7 +32,7 @@ export const CourseApprovalService = {
 
     async approveCourse(courseId, courseApprove) {
         return axios
-            .put(`${apiHost}/api/CourseManagementApi/UpdateCoursesStatus`, { courseId, courseApprove })
+            .put(`${apiHost}/api/CourseManagementApiDapper/UpdateCoursesStatus`, { courseId, courseApprove })
             .then((response) => response.data)
             .catch((error) => {
                 console.error('Error approving course: ', error);

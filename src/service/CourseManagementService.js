@@ -5,7 +5,7 @@ const apiHost = import.meta.env.VITE_API_HOST;
 export const CourseManagementService = {
     async getCourseManagementData() {
         return axios
-            .get(`${apiHost}/api/CourseManagementApi/GetCourseManagementData`)
+            .get(`${apiHost}/api/CourseManagementApiDapper/GetCourseManagementData`)
             .then((response) => {
                 return response.data;
             })
@@ -16,7 +16,7 @@ export const CourseManagementService = {
 
     async getCourseQty(startFromCurrentMonth) {
         return axios
-            .get(`${apiHost}/api/CourseManagementApi/GetCourseQty`, {
+            .get(`${apiHost}/api/CourseManagementApiDapper/GetCourseQty`, {
                 params: {
                     startFromCurrentMonth: startFromCurrentMonth
                 }
@@ -31,7 +31,7 @@ export const CourseManagementService = {
 
     async getCourseQtyByPublishingStatus(isPublished, startFromCurrentMonth) {
         return axios
-            .get(`${apiHost}/api/CourseManagementApi/GetCourseQtyByPublishingStatus`, {
+            .get(`${apiHost}/api/CourseManagementApiDapper/GetCourseQtyByPublishingStatus`, {
                 params: {
                     isPublished: isPublished,
                     startFromCurrentMonth: startFromCurrentMonth
@@ -47,7 +47,7 @@ export const CourseManagementService = {
 
     async enableCourse(courseId, courseEnable) {
         return axios
-            .put(`${apiHost}/api/CourseManagementApi/UpdatePublishingStatus`, { courseId: courseId, isEnabled: courseEnable })
+            .put(`${apiHost}/api/CourseManagementApiDapper/UpdatePublishingStatus`, { courseId: courseId, isEnabled: courseEnable })
             .then((response) => response.data)
             .catch((error) => {
                 console.error('Error approving course: ', error);
@@ -56,7 +56,7 @@ export const CourseManagementService = {
 
     async updateCourseData(courseData) {
         return axios
-            .put(`${apiHost}/api/CourseManagementApi/UpdateCourseInfo`, courseData)
+            .put(`${apiHost}/api/CourseManagementApiDapper/UpdateCourseInfo`, courseData)
             .then((response) => response.data)
             .catch((error) => {
                 console.error('Error approving course: ', error);
