@@ -4,7 +4,7 @@
 [![前台專案](https://img.shields.io/badge/前台專案-Talking%20Topia-6f42c1?style=flat-square&logo=github&logoColor=white)](https://github.com/hsinhan-h/talking-topia)
 ---
 
-<img src="assets/admin-preview-1.png" width="429" height="264" alt="後台管理系統示意 1">　<img src="assets/admin-preview-2.png" width="429" height="264" alt="後台管理系統示意 2">
+<img src="assets/admin-preview-1.png" width="380" height="234" alt="後台管理系統示意 1">　<img src="assets/admin-preview-2.png" width="380" height="234" alt="後台管理系統示意 2">
 
 ## 專案簡介
 
